@@ -5,8 +5,8 @@
 
 #--------------Basic Pictures--------------#
 # Update the pictures with your own files in the 'source/images' folder of your Hexo site and use a relative path.
-avatar: /images/avatar.jpg
-favicon: /images/favicon.ico
+avatar: /images/LuXiao.jpg
+favicon: /images/fa1.ico
 
 #--------------Menu Configuration--------------#
 # Add, remove or rearrange menu items as needed
@@ -22,9 +22,6 @@ menu:
   - name: CV
     url: /cv/
     icon: fa-solid fa-id-card
-  - name: Talks
-    url: /talks/
-    icon: fa-solid fa-microphone
   - name: Notes
     url: /notes/
     icon: fa-solid fa-sticky-note
