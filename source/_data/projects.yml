@@ -1,0 +1,8 @@
+- title: "Your Research Project"
+  status: "current"
+  period: "20XX - Present"
+  category: "Research"
+  description: "Brief description of your project."
+  tags: ["Tag1", "Tag2"]
+  github: "https://github.com/LuX-x7"
+  featured: enable

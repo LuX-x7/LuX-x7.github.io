@@ -1,0 +1,135 @@
+education:
+  - degree: "Ph.D. in Computer Science"
+    institution: "Stanford University"
+    period: "2015 - 2019"
+    description: "Specialized in Machine Learning and Artificial Intelligence"
+
+  - degree: "M.S. in Computer Science"
+    institution: "Massachusetts Institute of Technology"
+    period: "2013 - 2015"
+    description: "Focus on Natural Language Processing"
+
+  - degree: "B.S. in Computer Science"
+    institution: "University of California, Berkeley"
+    period: "2009 - 2013"
+    description: "Graduated with Honors"
+
+experience:
+  - position: "Associate Professor"
+    institution: "Stanford University"
+    period: "2021 - Present"
+    description: "Leading research in machine learning and artificial intelligence"
+    responsibilities:
+      - "Supervising 5 PhD students and 3 postdoctoral researchers"
+      - "Teaching advanced courses in machine learning and AI"
+      - "Securing and managing multiple research grants"
+      - "Publishing in top-tier conferences and journals"
+
+  - position: "Assistant Professor"
+    institution: "University of California, Berkeley"
+    period: "2019 - 2021"
+    description: "Established and led the AI Research Lab"
+    responsibilities:
+      - "Developed and taught undergraduate and graduate courses"
+      - "Mentored 3 PhD students"
+      - "Published 10+ papers in top conferences"
+
+  - position: "Research Scientist"
+    institution: "Google AI"
+    period: "2018 - 2019"
+    description: "Worked on natural language processing projects"
+    responsibilities:
+      - "Developed new algorithms for text understanding"
+      - "Collaborated with product teams on AI applications"
+      - "Published 5 papers and filed 3 patents"
+
+skills:
+  "Programming Languages":
+    - "Python"
+    - "C++"
+    - "Java"
+    - "JavaScript"
+  
+  "Machine Learning":
+    - "Deep Learning"
+    - "Natural Language Processing"
+    - "Computer Vision"
+    - "Reinforcement Learning"
+  
+  "Tools & Frameworks":
+    - "TensorFlow"
+    - "PyTorch"
+    - "scikit-learn"
+    - "Git"
+    - "Docker"
+
+awards:
+  - title: "Best Paper Award"
+    issuer: "International Conference on Machine Learning"
+    date: "2022"
+    description: "For outstanding contribution to the field of machine learning"
+
+  - title: "Early Career Research Award"
+    issuer: "National Science Foundation"
+    date: "2021-02-21"
+    description: "Recognizing exceptional promise in research"
+
+  - title: "Teaching Excellence Award"
+    issuer: "Stanford University"
+    date: "2020"
+    description: "For outstanding contributions to teaching"
+
+languages:
+  - name: "English"
+    level: "Native"
+  - name: "Spanish"
+    level: "Professional"
+  - name: "Mandarin"
+    level: "Intermediate"
+
+teaching:
+  - course_name: "CS229: Machine Learning"
+    institution: "Stanford University"
+    period: "2021 - Present"
+    role: "Instructor"
+    description: "Advanced graduate course covering machine learning algorithms and applications"
+    students: "120 students per semester"
+    evaluation: "4.8/5.0"
+
+  - course_name: "CS106A: Programming Fundamentals"
+    institution: "Stanford University"
+    period: "2020 - 2021"
+    role: "Teaching Assistant"
+    description: "Introductory programming course in Python"
+    students: "300 students"
+    evaluation: "4.6/5.0"
+
+  - course_name: "AI Ethics and Society"
+    institution: "Stanford University"
+    period: "2022 - Present"
+    role: "Co-Instructor"
+    description: "Interdisciplinary course exploring ethical implications of AI"
+    students: "80 students per semester"
+    evaluation: "4.9/5.0"
+
+research_interests:
+  - area: "Machine Learning Theory"
+    description: "Developing theoretical foundations for deep learning algorithms, with focus on generalization bounds and optimization landscapes"
+    keywords: ["Deep Learning", "Optimization", "Generalization", "PAC-Bayes"]
+    current_projects:
+      - "Non-convex optimization in neural networks"
+      - "Generalization bounds for large language models"
+
+  - area: "AI Safety and Alignment"
+    description: "Ensuring AI systems behave safely and in accordance with human values"
+    keywords: ["AI Safety", "Value Alignment", "Robustness", "Interpretability"]
+    current_projects:
+      - "Mechanistic interpretability in transformers"
+      - "Reward modeling for human feedback"
+
+  - area: "Natural Language Processing"
+    description: "Building systems that can understand and generate human language"
+    keywords: ["Language Models", "Transformers", "Multimodal AI", "Reasoning"]
+    current_projects:
+      - "Improving reasoning in large language models"
+      - "Multimodal understanding and generation"

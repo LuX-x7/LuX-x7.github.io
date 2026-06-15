@@ -1,0 +1,197 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-8 text-base-content">Publications</h1>
+
+  <!-- Filters -->
+  <div class="glass-card p-4 mb-8">
+    <div class="flex flex-wrap gap-4 items-center">
+      <!-- Year Filter -->
+      <div class="form-control w-40">
+        <select class="select select-bordered" id="yearFilter" name="yearFilter">
+          <option value="">All Years</option>
+          <% 
+            const years = [...new Set(site.data.publications.map(p => p.year))].sort((a, b) => b - a);
+            years.forEach(year => {
+          %>
+            <option value="<%= year %>"><%= year %></option>
+          <% }); %>
+        </select>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="form-control w-48">
+        <select class="select select-bordered" id="categoryFilter" name="categoryFilter">
+          <option value="">All Categories</option>
+          <% 
+            const categories = [...new Set(site.data.publications.map(p => p.category))].filter(c => c).sort();
+            categories.forEach(category => {
+          %>
+            <option value="<%= category %>"><%= category %></option>
+          <% }); %>
+        </select>
+      </div>
+
+      <!-- Search -->
+      <div class="form-control flex-grow min-w-[200px]">
+        <input type="text" placeholder="Search publications..." class="input input-bordered" id="searchInput" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Publications List -->
+  <div id="publicationsList" class="space-y-6">
+    <% site.data.publications.forEach(function(pub) { %>
+      <div class="card glass rounded-box shadow-lg bg-base-100 text-base-content hover:shadow-xl hover:scale-[1.01] transition-all duration-300 border border-base-300 publication-item"
+           data-year="<%= pub.year %>"
+           data-category="<%= (pub.category || '').toLowerCase() %>">
+        <div class="card-body p-6">
+          <!-- Title and Type Badge -->
+          <div class="flex flex-col md:flex-row md:items-start md:justify-between mb-2">
+            <h2 class="card-title text-xl font-bold text-primary leading-tight flex-1 mb-1 md:mb-0">
+              <%= pub.title %>
+            </h2>
+            <div class="flex items-center gap-2 mt-1 md:mt-0">
+              <% if (pub.type) { %>
+                <div class="badge badge-secondary badge-lg z-50"><%= pub.type %></div>
+              <% } %>
+              <% if (pub.doi) { %>
+                <div class='altmetric-embed z-50 relative' data-badge-type='donut' data-doi='<%= pub.doi %>' data-badge-popover="bottom" data-hide-no-mentions="true"></div>
+                <span class="__dimensions_badge_embed__ z-50 relative" data-doi='<%= pub.doi %>' data-style="small_circle" data-hide-zero-citations="true"></span>
+              <% } %>
+            </div>
+          </div>
+  
+          <!-- Authors and Metadata -->
+          <div class="mb-4">
+            <% if (pub.authors) { %>
+              <p class="text-base font-medium text-base-content/90 mb-3"><%= pub.authors %></p>
+            <% } %>
+            
+            <div class="flex flex-wrap items-center gap-4 text-sm text-base-content/70">
+              <% if (pub.venue) { %>
+                <span class="flex items-center">
+                  <i class="fa-solid fa-building w-4 h-4 mr-1"></i>
+                  <%= pub.venue %>
+                </span>
+              <% } %>
+              <% if (pub.year) { %>
+                <span class="flex items-center">
+                  <i class="fa-solid fa-calendar-week w-4 h-4 mr-1"></i>
+                  <%= pub.year %>
+                </span>
+              <% } %>
+              <% if (pub.category) { %>
+                <span class="flex items-center">
+                  <i class="fa-solid fa-layer-group w-4 h-4 mr-1"></i>
+                  <%= pub.category %>
+                </span>
+              <% } %>
+            </div>
+            
+            <!-- Tags -->
+            <% if (pub.tags && pub.tags.length) { %>
+              <div class="flex flex-wrap gap-2 mt-3">
+                <% pub.tags.forEach(tag => { %>
+                  <span class="badge badge-outline badge-sm"><%= tag %></span>
+                <% }); %>
+              </div>
+            <% } %>
+          </div>
+  
+          <!-- Abstract -->
+          <% if (pub.abstract) { %>
+            <div class="prose max-w-none mb-4">
+              <p class="text-base-content/80 text-sm leading-relaxed"><%= pub.abstract %></p>
+            </div>
+          <% } %>
+  
+          <!-- Action Buttons -->
+          <div class="card-actions justify-start">
+            <% if (pub.doi) { %>
+              <a href="https://doi.org/<%= pub.doi %>" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer" title="DOI">
+                <i class="fa-solid fa-link w-4 h-4 mr-1"></i>
+                DOI
+              </a>
+            <% } %>
+            <% if (pub.pdf) { %>
+              <a href="<%= pub.pdf %>" class="btn btn-secondary btn-sm" target="_blank" rel="noopener noreferrer" title="PDF">
+                <i class="fa-solid fa-file-pdf"></i>
+                PDF
+              </a>
+            <% } %>
+            <% if (pub.code) { %>
+              <a href="<%= pub.code %>" class="btn btn-accent btn-sm" target="_blank" rel="noopener noreferrer" title="Code">
+                <i class="fa-solid fa-code"></i>
+                Code
+              </a>
+            <% } %>
+            <% if (pub.website) { %>
+              <a href="<%= pub.website %>" class="btn btn-info btn-sm" target="_blank" rel="noopener noreferrer" title="Project Website">
+                <i class="fa-solid fa-globe"></i>
+                Website
+              </a>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+  
+</div>
+
+<script>
+  const yearFilter = document.getElementById('yearFilter');
+  const categoryFilter = document.getElementById('categoryFilter');
+  const searchInput = document.getElementById('searchInput');
+  const publications = document.querySelectorAll('.publication-item');
+
+  function filterPublications() {
+    const yearVal = yearFilter.value;
+    const categoryVal = categoryFilter.value.toLowerCase();
+    const searchVal = searchInput.value.toLowerCase();
+    
+    let visibleCount = 0;
+
+    publications.forEach(pub => {
+      const pubYear = pub.getAttribute('data-year');
+      const pubCategory = pub.getAttribute('data-category') || '';
+      const titleElement = pub.querySelector('.card-title');
+      const authorsElement = pub.querySelector('p.text-base');
+      
+      const title = titleElement ? titleElement.textContent.toLowerCase() : '';
+      const authors = authorsElement ? authorsElement.textContent.toLowerCase() : '';
+      const venue = pub.querySelector('em') ? pub.querySelector('em').textContent.toLowerCase() : '';
+      const abstract = pub.querySelector('.prose p') ? pub.querySelector('.prose p').textContent.toLowerCase() : '';
+
+      const matchesYear = !yearVal || pubYear === yearVal;
+      const matchesCategory = !categoryVal || pubCategory.toLowerCase().includes(categoryVal);
+      const matchesSearch = !searchVal || 
+                           title.includes(searchVal) || 
+                           authors.includes(searchVal) ||
+                           venue.includes(searchVal) ||
+                           abstract.includes(searchVal);
+
+      if (matchesYear && matchesCategory && matchesSearch) {
+        pub.style.display = 'block';
+        visibleCount++;
+      } else {
+        pub.style.display = 'none';
+      }
+    });
+    
+    // Update results count (if you want to add this)
+    updateResultsCount(visibleCount, searchVal, yearVal, categoryVal);
+  }
+  
+  function updateResultsCount(count, search, year, category) {
+    // You can add a results counter element if needed
+    const filters = [search, year, category].filter(Boolean);
+    console.log(`Showing ${count} publications${filters.length ? ' (filtered)' : ''}`);
+  }
+
+  yearFilter.addEventListener('change', filterPublications);
+  categoryFilter.addEventListener('change', filterPublications);
+  searchInput.addEventListener('input', filterPublications);
+
+  // 初始化显示全部
+  filterPublications();
+</script>

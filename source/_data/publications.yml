@@ -1,0 +1,12 @@
+- title: "Your Publication Title"
+  authors: "Lu Xiao, et al."
+  venue: "Conference or Journal Name"
+  year: "20XX"
+  type: "conference"
+  links:
+    - label: "PDF"
+      url: "#"
+    - label: "Code"
+      url: "https://github.com/LuX-x7"
+  abstract: "Brief abstract of your publication."
+  featured: true

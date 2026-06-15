@@ -1,0 +1,8 @@
+- title: "Your Talk Title"
+  event: "Conference or Seminar Name"
+  location: "City, Country"
+  date: "20XX-XX-XX"
+  type: "presentation"
+  links:
+    - label: "Slides"
+      url: "#"

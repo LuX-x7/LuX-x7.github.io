@@ -1,0 +1,48 @@
+education:
+  - degree: "Visiting Student"
+    institution: "Your Institution"
+    period: "2025 - 2026"
+    description: "Research focus area"
+
+  - degree: "B.S./M.S. in Your Major"
+    institution: "Your University"
+    period: "20XX - 20XX"
+    description: "Relevant coursework and achievements"
+
+experience:
+  - position: "Research Intern / Visiting Student"
+    institution: "Your Lab or Company"
+    period: "20XX - Present"
+    description: "Brief description of your research or work"
+    responsibilities:
+      - "Responsibility or contribution 1"
+      - "Responsibility or contribution 2"
+
+skills:
+  "Research Areas":
+    - "Human-Computer Interaction"
+    - "Design"
+    - "Intelligent Systems"
+
+  "Tools & Frameworks":
+    - "Python"
+    - "Git"
+    - "LaTeX"
+
+awards:
+  - title: "Your Award"
+    issuer: "Awarding Institution"
+    date: "20XX"
+    description: "Brief description"
+
+languages:
+  - language: "English"
+    proficiency: "Professional"
+  - language: "Chinese"
+    proficiency: "Native"
+
+teaching:
+  - course: "Your Teaching Experience"
+    institution: "University"
+    period: "20XX"
+    description: "Brief description"

@@ -1,0 +1,149 @@
+#-----------------------------------------------#
+# Theme Configuration for Hexo Researcher Theme #
+#-----------------------------------------------#
+
+
+#--------------Basic Pictures--------------#
+# Update the pictures with your own files in the 'source/images' folder of your Hexo site and use a relative path.
+avatar: /images/avatar.jpg
+favicon: /images/favicon.ico
+
+#--------------Menu Configuration--------------#
+# Add, remove or rearrange menu items as needed
+# Use Font Awesome icons: https://fontawesome.com/icons to find icon names
+# Example icon: fa-solid fa-newspaper
+menu:
+  - name: Publications
+    url: /publications/
+    icon: fa-solid fa-newspaper
+  - name: Projects
+    url: /projects/
+    icon: fa-solid fa-project-diagram
+  - name: CV
+    url: /cv/
+    icon: fa-solid fa-id-card
+  - name: Talks
+    url: /talks/
+    icon: fa-solid fa-microphone
+  - name: Notes
+    url: /notes/
+    icon: fa-solid fa-sticky-note
+  - name: Contact
+    url: /contact/
+    icon: fa-solid fa-envelope
+
+#--------------PDF CV Download--------------#
+# Provide a link to download your CV or put the pdf file in the 'source/files' folder of your Hexo site and use a relative path.
+cv:
+  #download_link: https://www.nature.com/articles/d41586-025-01882-7.pdf 
+  # or
+  download_link: /files/cv-template.pdf
+
+#--------------CV Page Configuration--------------#
+# Set to false to hide any section
+cv_sections:
+  education: true
+  experience: true
+  skills: true
+  awards: true
+  languages: true
+  teaching: true
+
+#--------------Index Page About Configuration--------------#
+about:
+  I am a researcher passionate about artificial intelligence and computational biology.
+  My work focuses on leveraging machine learning to solve real-world problems.
+  <br><br>
+  Outside of research, I enjoy hiking, writing, and coffee brewing.
+
+
+#--------------Academic Profiles Configuration--------------#
+academic_profiles:
+  google_scholar: https://scholar.google.com/citations?user=YOUR_ID
+  orcid: https://orcid.org/YOUR_ID
+  researchgate: https://www.researchgate.net/profile/YOUR_ID
+  github: https://github.com/YOUR_ID
+  linkedin: https://linkedin.com/in/YOUR_ID
+  twitter: https://twitter.com/YOUR_ID
+
+#--------------Contact Configuration--------------#
+contact:
+  email: your.email@example.com
+  phone: "+0 123 456789"
+  address: "Room 123, Department of Biology, University of Example, 12345 City, Country"
+  google_map: "https://maps.app.goo.gl/xxxxxxxxxxx"
+  office_hours: "Mon–Fri 10:00–16:00"
+
+
+#--------------Share Post Configuration--------------#
+share_post:
+  enable: true  # Set to false to disable share post feature
+  platforms:    # Configure the platforms to display
+    twitter: true
+    linkedin: true
+    facebook: true
+    reddit: false
+    weibo: true
+    qq: true
+    wechat: true
+
+
+#--------------Push/Analytics Configuration--------------#
+# Google adsense
+google_adsense: your_google_adsense_id
+# Umami
+umami_id: your_umami_id
+# Baidu_tongji
+baidu_tongji: your_baidu_tongji_id
+
+
+#--------------Advertising Configuration--------------#
+# Enable or disable ads and configure ad settings
+# Currently supports Adsterra
+ads:
+  enable: true
+  adsterra:
+    js: "//pl26983555.revenuecpmgate.com/db7d69311c4f7d098bf9a0684c80620e/invoke.js"
+    div_id: "container-db7d69311c4f7d098bf9a0684c80620e"
+
+
+
+#--------------DaisyUI Theme Configuration--------------#
+daisyui:
+  default: light
+  enabled:
+    - light
+    - dark
+    - cupcake
+    - bumblebee
+    - emerald
+    - corporate
+    - synthwave
+    - retro
+    - cyberpunk
+    - valentine
+    - halloween
+    - garden
+    - forest
+    - aqua
+    - lofi
+    - pastel
+    - fantasy
+    - wireframe
+    - black
+    - luxury
+    - dracula
+    - cmyk
+    - autumn
+    - business
+    - acid
+    - lemonade
+    - night
+    - coffee
+    - winter
+    - dim
+    - nord
+    - sunset
+    - caramellatte
+    - abyss
+    - silk
