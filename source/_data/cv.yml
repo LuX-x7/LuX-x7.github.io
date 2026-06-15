@@ -1,3 +1,11 @@
+research_interests:
+  - area: "Human-Computer Interaction"
+    description: "Designing interactive systems for better user experiences."
+    keywords: ["HCI", "Interaction Design", "User Experience"]
+  - area: "Intelligent Systems"
+    description: "Leveraging AI and computational methods for design and research."
+    keywords: ["AI", "Machine Learning", "Design Tools"]
+
 education:
   - degree: "Visiting Student"
     institution: "Your Institution"

@@ -9,4 +9,4 @@
     - label: "Code"
       url: "https://github.com/LuX-x7"
   abstract: "Brief abstract of your publication."
-  featured: true
+  featured: enable

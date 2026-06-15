@@ -132,7 +132,7 @@
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <%
-      const featuredPubs = site.data.publications.filter(p => p.featured === 'enable').slice(0, 3);
+      const featuredPubs = site.data.publications.filter(p => p.featured === 'enable' || p.featured === true).slice(0, 3);
       featuredPubs.forEach(function(pub) {
     %>
       <div class="card glass rounded-box shadow-md bg-base-100 text-base-content hover:shadow-lg transition-all duration-300">
@@ -189,7 +189,7 @@
   <h2 class="text-3xl font-bold mb-8 text-base-content">Featured Projects</h2>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <%
-      const featuredProjects = site.data.projects.filter(p => p.featured === 'enable').slice(0, 3);
+      const featuredProjects = site.data.projects.filter(p => p.featured === 'enable' || p.featured === true).slice(0, 3);
       featuredProjects.forEach(function(project) {
     %>
       <div class="card glass rounded-box shadow-md bg-base-100 text-base-content hover:shadow-lg transition-all duration-300">
