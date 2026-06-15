@@ -22,15 +22,9 @@ menu:
   - name: CV
     url: /cv/
     icon: fa-solid fa-id-card
-  - name: Talks
-    url: /talks/
-    icon: fa-solid fa-microphone
   - name: Notes
     url: /notes/
     icon: fa-solid fa-sticky-note
-  - name: Contact
-    url: /contact/
-    icon: fa-solid fa-envelope
 
 #--------------PDF CV Download--------------#
 # Provide a link to download your CV or put the pdf file in the 'source/files' folder of your Hexo site and use a relative path.
