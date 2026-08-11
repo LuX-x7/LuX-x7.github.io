@@ -37,7 +37,7 @@ const LinkOut = ({ href, children }: { href: string; children: ReactNode }) => <
 function Home() {
   const writing = [{ date: "2026", title: "First set of learning notes", type: "PDF" }, { date: "2026", title: "On learning carefully", type: "Essay" }];
   return <main>
-    <section className="introduction"><img src="/touxiang1.jpg" alt="Portrait of Lu Xiao" /><div><h1>Lu Xiao <span className="chinese-name">肖路</span></h1><p>I am an incoming M.Sc. student in Artificial Intelligence at Hunan University. My interests lie in artificial intelligence, robotics, and visual computing.</p><p>This website is a quiet record of what I learn, write, and build.</p></div></section>
+    <section className="introduction"><img src="/touxiang1.png" alt="Portrait of Lu Xiao" /><div><h1>Lu Xiao <span className="chinese-name">肖路</span></h1><p>I am an incoming M.Sc. student in Artificial Intelligence at Hunan University. My interests lie in artificial intelligence, robotics, and visual computing.</p><p>This website is a quiet record of what I learn, write, and build.</p></div></section>
     <section className="home-section"><h2>Recent writing</h2><div className="entry-list">{writing.map(item => <a className="entry" href="/writing/" key={item.title}><time>{item.date}</time><span>{item.title}</span><small>{item.type}</small></a>)}</div><p className="more-link"><a href="/writing/">All writing →</a></p></section>
     <section className="home-section"><h2>Projects</h2><p>I keep a small collection of current and completed projects, including this website.</p><p className="more-link"><a href="/projects/">View projects →</a></p></section>
   </main>;
