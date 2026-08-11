@@ -82,14 +82,14 @@ p { margin: 0 0 14px; }
 .text-section { margin-top: 60px; }
 .text-section h2 { margin: 0 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
 .text-section > p { max-width: 890px; color: var(--body-copy); font-size: 17px; line-height: 1.82; }
-.dated-item { display: grid; grid-template-columns: 158px minmax(0, 1fr) 174px; gap: 28px; align-items: start; margin: 34px 0; }
+.dated-item { display: grid; grid-template-columns: 158px minmax(0, 1fr) 222px; gap: 28px; align-items: start; margin: 34px 0; }
 .dated-item time { padding-top: 1px; color: var(--secondary); font-family: "Times New Roman", Times, serif; font-size: 17px; font-style: italic; font-variant-numeric: tabular-nums; letter-spacing: .01em; }
 .dated-item h3, .dated-item p { margin: 0; }
 .dated-item h3 { margin-bottom: 6px; font-size: 19px; }
 .dated-item p { color: var(--secondary); font-size: 16.5px; line-height: 1.68; }
-.institution-logos { display: flex; justify-content: flex-end; gap: 9px; width: 174px; }
-.institution-logo { justify-self: end; width: 76px; height: 76px; padding: 7px; border: 1px solid var(--border); border-radius: 12px; background: #fff; object-fit: contain; }
-.institution-logo-wide { width: 92px; padding: 4px; }
+.institution-logos { display: flex; justify-content: flex-end; gap: 10px; width: 222px; }
+.institution-logo { justify-self: end; width: 100px; height: 100px; padding: 8px; border: 1px solid var(--border); border-radius: 14px; background: #fff; object-fit: contain; }
+.institution-logo-wide { width: 112px; padding: 4px; }
 .contact-list { max-width: 560px; }
 .contact-list p { display: grid; grid-template-columns: 96px 1fr; gap: 20px; margin: 0; padding: 13px 0; border-bottom: 1px solid var(--border); font-size: 17px; }
 .contact-list span { color: var(--secondary); font-family: "Times New Roman", Times, serif; font-size: 18px; }
@@ -142,13 +142,13 @@ footer { padding: 26px 0 42px; border-top: 1px solid var(--border); color: var(-
   .text-section { margin-top: 78px; }
   .text-section h2 { margin-bottom: 24px; padding-bottom: 14px; }
   .text-section > p { max-width: 1120px; font-size: 21px; }
-  .dated-item { grid-template-columns: 200px minmax(0, 1fr) 210px; gap: 34px; margin: 43px 0; }
+  .dated-item { grid-template-columns: 200px minmax(0, 1fr) 274px; gap: 34px; margin: 43px 0; }
   .dated-item time { font-size: 21px; }
   .dated-item h3 { margin-bottom: 8px; font-size: 24px; }
   .dated-item p { font-size: 20px; }
-  .institution-logos { gap: 11px; width: 210px; }
-  .institution-logo { width: 96px; height: 96px; padding: 8px; border-radius: 14px; }
-  .institution-logo-wide { width: 108px; }
+  .institution-logos { gap: 12px; width: 274px; }
+  .institution-logo { width: 124px; height: 124px; padding: 10px; border-radius: 16px; }
+  .institution-logo-wide { width: 138px; }
   .contact-list { max-width: 700px; }
   .contact-list p { grid-template-columns: 120px 1fr; gap: 26px; padding: 16px 0; font-size: 21px; }
   .contact-list span { font-size: 22px; }
@@ -188,14 +188,14 @@ footer { padding: 26px 0 42px; border-top: 1px solid var(--border); color: var(-
   .entry, .writing-index article { grid-template-columns: 48px 1fr; }
   .entry small, .writing-index small { display: none; }
   .entry time, .writing-index time { font-size: 15px; }
-  .dated-item { grid-template-columns: 1fr 56px; gap: 5px 16px; }
+  .dated-item { grid-template-columns: 1fr 66px; gap: 5px 16px; }
   .dated-item time { grid-column: 1 / -1; }
   .dated-item h3 { font-size: 18px; }
   .dated-item p { font-size: 15.5px; }
-  .institution-logo { grid-column: 2; grid-row: 2; width: 54px; height: 54px; padding: 5px; }
+  .institution-logo { grid-column: 2; grid-row: 2; width: 64px; height: 64px; padding: 6px; }
   .institution-logos { grid-column: 1 / -1; grid-row: 3; justify-content: flex-start; width: 100%; margin-top: 7px; }
-  .institution-logos .institution-logo { width: 54px; height: 54px; }
-  .institution-logos .institution-logo-wide { width: 78px; }
+  .institution-logos .institution-logo { width: 64px; height: 64px; }
+  .institution-logos .institution-logo-wide { width: 92px; }
   .contact-list p { grid-template-columns: 76px 1fr; gap: 14px; font-size: 16px; }
   .contact-list span { font-size: 17px; }
   .project-item h2 { font-size: 22px; }
