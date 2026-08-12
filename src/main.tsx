@@ -61,8 +61,45 @@ function About() {
 }
 
 function Writing() {
-  const entries = [{ year: "2026", title: "First set of learning notes", description: "A short description of the subject covered by this PDF.", format: "PDF" }, { year: "2026", title: "On learning carefully", description: "A placeholder for a future essay.", format: "Essay" }];
-  return <main><header className="page-header"><h1>Writing</h1><p>Essays and PDF notes on subjects I am studying.</p></header><div className="writing-index">{entries.map(entry => <article key={entry.title}><time>{entry.year}</time><div><h2><a href="#">{entry.title}</a></h2><p>{entry.description}</p></div><small>{entry.format}</small></article>)}</div><p className="quiet-note">PDF notes will open directly in the browser and remain available for download.</p></main>;
+  const entries = [
+    {
+      year: "2026",
+      title: "Introduction",
+      description: "An introductory set of learning notes.",
+      format: "PDF",
+      href: "/pdfs/Introduction.pdf"
+    }
+  ];
+
+  return (
+    <main>
+      <header className="page-header">
+        <h1>Writing</h1>
+        <p>Essays and PDF notes on subjects I am studying.</p>
+      </header>
+
+      <div className="writing-index">
+        {entries.map(entry => (
+          <article key={entry.title}>
+            <time>{entry.year}</time>
+            <div>
+              <h2>
+                <a href={entry.href} target="_blank" rel="noreferrer">
+                  {entry.title}
+                </a>
+              </h2>
+              <p>{entry.description}</p>
+            </div>
+            <small>{entry.format}</small>
+          </article>
+        ))}
+      </div>
+
+      <p className="quiet-note">
+        PDF notes will open directly in the browser and remain available for download.
+      </p>
+    </main>
+  );
 }
 
 function Projects() {
