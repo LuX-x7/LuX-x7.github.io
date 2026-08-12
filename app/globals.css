@@ -108,11 +108,13 @@ p { margin: 0 0 14px; }
 .project-item:hover { margin-inline: -14px; padding-inline: 14px; background: var(--hover); }
 .project-item:last-child { border-bottom: 1px solid var(--border); }
 .project-item h2 { margin: 0 0 8px; font-size: 25px; }
+.project-heading { display: flex; align-items: baseline; gap: 24px; }
+.project-heading time { color: var(--secondary); font-family: "Times New Roman", Times, serif; font-size: 17px; font-style: italic; font-variant-numeric: tabular-nums; }
 .project-item p { color: var(--body-copy); }
 .project-meta { margin: 0 !important; color: var(--secondary) !important; font-size: 13px; }
 footer { padding: 26px 0 42px; border-top: 1px solid var(--border); color: var(--secondary); font-size: 15px; }
 .year-number { font-family: "Times New Roman", Times, serif; font-size: 17px; font-style: normal; }
-.footer-name { font-family: "Times New Roman", Times, serif; }
+.footer-name { font-family: "Times New Roman", Times, serif; font-size: 19px; }
 @media (min-width: 1100px) {
   body { font-size: 20px; }
   .site-header, .site-content, footer { width: min(calc(100% - 88px), 1280px); }
@@ -160,9 +162,12 @@ footer { padding: 26px 0 42px; border-top: 1px solid var(--border); color: var(-
   .writing-index p, .quiet-note { font-size: 20px; }
   .project-item { padding: 43px 0; }
   .project-item h2 { font-size: 32px; }
+  .project-heading { gap: 32px; }
+  .project-heading time { font-size: 21px; }
   .project-meta { font-size: 17px; }
   footer { padding: 32px 0 52px; font-size: 18px; }
   .year-number { font-size: 21px; }
+  .footer-name { font-size: 23px; }
 }
 @media (max-width: 600px) {
   .site-header, .site-content, footer { width: min(calc(100% - 40px), 1000px); }
@@ -200,5 +205,8 @@ footer { padding: 26px 0 42px; border-top: 1px solid var(--border); color: var(-
   .contact-list p { grid-template-columns: 76px 1fr; gap: 14px; font-size: 16px; }
   .contact-list span { font-size: 17px; }
   .project-item h2 { font-size: 22px; }
+  .project-heading { display: block; }
+  .project-heading time { display: block; margin-bottom: 3px; font-size: 16px; }
+  .footer-name { font-size: 17px; }
   footer { padding: 22px 0 34px; font-size: 13.5px; }
 }

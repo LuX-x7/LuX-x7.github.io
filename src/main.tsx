@@ -20,7 +20,8 @@ const projectEntries = [
   {
     title: "Personal learning website",
     description: "A simple home for my writing, PDF notes, and project work.",
-    status: "In progress · 2026"
+    date: "2026.08",
+    status: "In progress"
   }
 ];
 
@@ -56,7 +57,7 @@ function Home() {
   return <main>
     <section className="introduction"><img src="/touxiang1.png" alt="Portrait of Lu Xiao" /><div><h1>Lu Xiao <span className="chinese-name">肖路</span></h1><p>I am an incoming M.Sc. student in Artificial Intelligence at Hunan University. My interests lie in artificial intelligence, robotics, and visual computing.</p><p>This website is a quiet record of what I learn, write, and build.</p></div></section>
     <section className="home-section"><h2>Recent writing</h2><div className="entry-list">{writingEntries.slice(0, 3).map(item => <a className="entry" href={item.href} target="_blank" rel="noreferrer" key={item.title}><time>{item.date}</time><span>{item.title}</span><small>{item.format}</small></a>)}</div><p className="more-link"><a href="/writing/">All writing →</a></p></section>
-    <section className="home-section"><h2>Projects</h2><div className="entry-list">{projectEntries.slice(0, 3).map(item => <a className="entry" href="/projects/" key={item.title}><time>{item.status.includes("2026") ? "2026" : "—"}</time><span>{item.title}</span><small>Project</small></a>)}</div><p className="more-link"><a href="/projects/">View projects →</a></p></section>
+    <section className="home-section"><h2>Projects</h2><div className="entry-list">{projectEntries.slice(0, 3).map(item => <a className="entry" href="/projects/" key={item.title}><time>{item.date}</time><span>{item.title}</span><small>Project</small></a>)}</div><p className="more-link"><a href="/projects/">View projects →</a></p></section>
   </main>;
 }
 
@@ -110,7 +111,7 @@ function Writing() {
 }
 
 function Projects() {
-  return <main><header className="page-header"><h1>Projects</h1><p>Selected things I have built or am currently working on.</p></header>{projectEntries.map(project => <section className="project-item" key={project.title}><h2>{project.title}</h2><p>{project.description}</p><p className="project-meta">{project.status}</p></section>)}</main>;
+  return <main><header className="page-header"><h1>Projects</h1><p>Selected things I have built or am currently working on.</p></header>{projectEntries.map(project => <section className="project-item" key={project.title}><div className="project-heading"><time>{project.date}</time><h2>{project.title}</h2></div><p>{project.description}</p><p className="project-meta">{project.status}</p></section>)}</main>;
 }
 
 const page = document.body.dataset.page;
