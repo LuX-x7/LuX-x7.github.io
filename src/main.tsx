@@ -6,6 +6,24 @@ type Theme = "light" | "dark";
 
 const navigation = [["Home", "/"], ["About", "/about/"], ["Writing", "/writing/"], ["Projects", "/projects/"]];
 
+const writingEntries = [
+  {
+    year: "2026",
+    title: "Introduction",
+    description: "An introductory set of learning notes.",
+    format: "PDF",
+    href: "/pdfs/Introduction.pdf"
+  }
+];
+
+const projectEntries = [
+  {
+    title: "Personal learning website",
+    description: "A simple home for my writing, PDF notes, and project work.",
+    status: "In progress · 2026"
+  }
+];
+
 function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("light");
   useEffect(() => setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light"), []);
@@ -35,11 +53,10 @@ function Layout({ children }: { children: ReactNode }) {
 const LinkOut = ({ href, children }: { href: string; children: ReactNode }) => <a href={href} target="_blank" rel="noreferrer">{children}</a>;
 
 function Home() {
-  const writing = [{ date: "2026", title: "First set of learning notes", type: "PDF" }, { date: "2026", title: "On learning carefully", type: "Essay" }];
   return <main>
     <section className="introduction"><img src="/touxiang1.png" alt="Portrait of Lu Xiao" /><div><h1>Lu Xiao <span className="chinese-name">肖路</span></h1><p>I am an incoming M.Sc. student in Artificial Intelligence at Hunan University. My interests lie in artificial intelligence, robotics, and visual computing.</p><p>This website is a quiet record of what I learn, write, and build.</p></div></section>
-    <section className="home-section"><h2>Recent writing</h2><div className="entry-list">{writing.map(item => <a className="entry" href="/writing/" key={item.title}><time>{item.date}</time><span>{item.title}</span><small>{item.type}</small></a>)}</div><p className="more-link"><a href="/writing/">All writing →</a></p></section>
-    <section className="home-section"><h2>Projects</h2><p>I keep a small collection of current and completed projects, including this website.</p><p className="more-link"><a href="/projects/">View projects →</a></p></section>
+    <section className="home-section"><h2>Recent writing</h2><div className="entry-list">{writingEntries.slice(0, 3).map(item => <a className="entry" href={item.href} target="_blank" rel="noreferrer" key={item.title}><time>{item.year}</time><span>{item.title}</span><small>{item.format}</small></a>)}</div><p className="more-link"><a href="/writing/">All writing →</a></p></section>
+    <section className="home-section"><h2>Projects</h2><div className="entry-list">{projectEntries.slice(0, 3).map(item => <a className="entry" href="/projects/" key={item.title}><time>{item.status.includes("2026") ? "2026" : "—"}</time><span>{item.title}</span><small>Project</small></a>)}</div><p className="more-link"><a href="/projects/">View projects →</a></p></section>
   </main>;
 }
 
@@ -61,16 +78,6 @@ function About() {
 }
 
 function Writing() {
-  const entries = [
-    {
-      year: "2026",
-      title: "Introduction",
-      description: "An introductory set of learning notes.",
-      format: "PDF",
-      href: "/pdfs/Introduction.pdf"
-    }
-  ];
-
   return (
     <main>
       <header className="page-header">
@@ -79,7 +86,7 @@ function Writing() {
       </header>
 
       <div className="writing-index">
-        {entries.map(entry => (
+        {writingEntries.map(entry => (
           <article key={entry.title}>
             <time>{entry.year}</time>
             <div>
@@ -103,7 +110,7 @@ function Writing() {
 }
 
 function Projects() {
-  return <main><header className="page-header"><h1>Projects</h1><p>Selected things I have built or am currently working on.</p></header><section className="project-item"><h2>Personal learning website</h2><p>A simple home for my writing, PDF notes, and project work.</p><p className="project-meta">In progress · 2026</p></section><section className="project-item"><h2>Future project</h2><p>A short account of the problem, the work, and what I learned from it.</p><p className="project-meta">To be added</p></section></main>;
+  return <main><header className="page-header"><h1>Projects</h1><p>Selected things I have built or am currently working on.</p></header>{projectEntries.map(project => <section className="project-item" key={project.title}><h2>{project.title}</h2><p>{project.description}</p><p className="project-meta">{project.status}</p></section>)}</main>;
 }
 
 const page = document.body.dataset.page;
