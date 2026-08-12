@@ -8,7 +8,7 @@ const navigation = [["Home", "/"], ["About", "/about/"], ["Writing", "/writing/"
 
 const writingEntries = [
   {
-    year: "2026",
+    date: "2026.08",
     title: "Introduction",
     description: "An introductory set of learning notes.",
     format: "PDF",
@@ -46,7 +46,7 @@ function Layout({ children }: { children: ReactNode }) {
       </div>
     </header>
     <div className="site-content">{children}</div>
-    <footer>© <span className="year-number">2026</span> Lu Xiao</footer>
+    <footer>© <span className="year-number">2026</span> <span className="footer-name">Lu Xiao</span></footer>
   </>;
 }
 
@@ -55,7 +55,7 @@ const LinkOut = ({ href, children }: { href: string; children: ReactNode }) => <
 function Home() {
   return <main>
     <section className="introduction"><img src="/touxiang1.png" alt="Portrait of Lu Xiao" /><div><h1>Lu Xiao <span className="chinese-name">肖路</span></h1><p>I am an incoming M.Sc. student in Artificial Intelligence at Hunan University. My interests lie in artificial intelligence, robotics, and visual computing.</p><p>This website is a quiet record of what I learn, write, and build.</p></div></section>
-    <section className="home-section"><h2>Recent writing</h2><div className="entry-list">{writingEntries.slice(0, 3).map(item => <a className="entry" href={item.href} target="_blank" rel="noreferrer" key={item.title}><time>{item.year}</time><span>{item.title}</span><small>{item.format}</small></a>)}</div><p className="more-link"><a href="/writing/">All writing →</a></p></section>
+    <section className="home-section"><h2>Recent writing</h2><div className="entry-list">{writingEntries.slice(0, 3).map(item => <a className="entry" href={item.href} target="_blank" rel="noreferrer" key={item.title}><time>{item.date}</time><span>{item.title}</span><small>{item.format}</small></a>)}</div><p className="more-link"><a href="/writing/">All writing →</a></p></section>
     <section className="home-section"><h2>Projects</h2><div className="entry-list">{projectEntries.slice(0, 3).map(item => <a className="entry" href="/projects/" key={item.title}><time>{item.status.includes("2026") ? "2026" : "—"}</time><span>{item.title}</span><small>Project</small></a>)}</div><p className="more-link"><a href="/projects/">View projects →</a></p></section>
   </main>;
 }
@@ -70,8 +70,8 @@ function About() {
     </section>
     <section className="text-section"><h2>Research Experience</h2>
       <div className="dated-item"><time>2026 Mar–present</time><div><h3>Visiting Student</h3><p>Westlake Intelligent Computing and Application Lab, Westlake University</p><p>Mentor: Chair Professor <LinkOut href="https://haibinling.github.io/">Haibin Ling</LinkOut></p></div><img className="institution-logo" src="/logos/westlake.png" alt="Westlake University logo" /></div>
-      <div className="dated-item"><time>2025 Jan–Sep</time><div><h3>Research Training Programme</h3><p>Shenzhen X-Institute &amp; Tsinghua SIGS</p><p>Mentor: Professor <LinkOut href="https://www.sigs.tsinghua.edu.cn/wxq/list.htm">Xueqian Wang</LinkOut></p></div><div className="institution-logos"><img className="institution-logo institution-logo-wide" src="/logos/x-institute.jpg" alt="Shenzhen X-Institute logo" /><img className="institution-logo" src="/logos/tsinghua.png" alt="Tsinghua University emblem" /></div></div>
-      <div className="dated-item"><time>2022 Sep–2023 Jun</time><div><h3>Undergraduate Study in Chemistry</h3><p>School of Chemistry and Chemical Engineering, Nanchang University</p><p>Mentor: Professor <LinkOut href="https://chem.ncu.edu.cn/article.jsp?urltype=news.NewsContentUrl&wbtreeid=1411&wbnewsid=7261">Xiang Wang</LinkOut></p></div><img className="institution-logo" src="/logos/ncu.png" alt="Nanchang University emblem" /></div>
+      <div className="dated-item"><time>2025 Jan–Sep</time><div><h3>Intern</h3><p>Shenzhen X-Institute &amp; Tsinghua SIGS</p><p>Mentor: Professor <LinkOut href="https://www.sigs.tsinghua.edu.cn/wxq/list.htm">Xueqian Wang</LinkOut></p></div><div className="institution-logos"><img className="institution-logo institution-logo-wide" src="/logos/x-institute.jpg" alt="Shenzhen X-Institute logo" /><img className="institution-logo" src="/logos/tsinghua.png" alt="Tsinghua University emblem" /></div></div>
+      <div className="dated-item"><time>2022 Sep–2023 Jun</time><div><h3>Intern</h3><p>School of Chemistry and Chemical Engineering, Nanchang University</p><p>Mentor: Professor <LinkOut href="https://chem.ncu.edu.cn/article.jsp?urltype=news.NewsContentUrl&wbtreeid=1411&wbnewsid=7261">Xiang Wang</LinkOut></p></div><img className="institution-logo" src="/logos/ncu.png" alt="Nanchang University emblem" /></div>
     </section>
     <section className="text-section"><h2>Contact</h2><div className="contact-list"><p><span>Email</span><a href="mailto:luxiao.x7@gmail.com">luxiao.x7@gmail.com</a></p><p><span>WeChat</span><strong>LuX_Maphy</strong></p></div></section>
   </main>;
@@ -88,7 +88,7 @@ function Writing() {
       <div className="writing-index">
         {writingEntries.map(entry => (
           <article key={entry.title}>
-            <time>{entry.year}</time>
+            <time>{entry.date}</time>
             <div>
               <h2>
                 <a href={entry.href} target="_blank" rel="noreferrer">
