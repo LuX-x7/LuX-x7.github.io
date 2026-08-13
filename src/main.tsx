@@ -15,7 +15,7 @@ const writingEntries = [
     href: "/pdfs/NNDL-1.pdf"
   },
   {
-    date: "2026.08",
+    date: "2026.08.12",
     title: "Introduction",
     description: "An introductory set of learning notes.",
     format: "PDF",
@@ -27,7 +27,7 @@ const projectEntries = [
   {
     title: "Personal learning website",
     description: "A simple home for my writing, PDF notes, and project work.",
-    date: "2026.08",
+    date: "2026.08.13",
     status: "In progress"
   }
 ];
