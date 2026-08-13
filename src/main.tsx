@@ -8,6 +8,13 @@ const navigation = [["Home", "/"], ["About", "/about/"], ["Writing", "/writing/"
 
 const writingEntries = [
   {
+    date: "2026.08.13",
+    title: "Fundamentals of Machine Learning",
+    description: "Notes on basic concepts in machine learning, adapted from Neural Networks and Deep Learning.",
+    format: "PDF",
+    href: "/pdfs/NNDL-1.pdf"
+  },
+  {
     date: "2026.08",
     title: "Introduction",
     description: "An introductory set of learning notes.",
