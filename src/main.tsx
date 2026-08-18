@@ -8,9 +8,16 @@ const navigation = [["Home", "/"], ["About", "/about/"], ["Writing", "/writing/"
 
 const writingEntries = [
   {
+    date: "2026.08.18",
+    title: "Fundamentals of Linear Algebra",
+    description: "Notes on vectors, linear combinations, and the basic language of linear algebra.",
+    format: "PDF",
+    href: "/pdfs/LAF.pdf"
+  },
+  {
     date: "2026.08.13",
     title: "Fundamentals of Machine Learning",
-    description: "Notes on basic concepts in machine learning, adapted from Neural Networks and Deep Learning.",
+    description: "Notes introducing foundational concepts in machine learning.",
     format: "PDF",
     href: "/pdfs/NNDL-1.pdf"
   },
