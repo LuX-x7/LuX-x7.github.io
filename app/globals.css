@@ -109,7 +109,7 @@ p { margin: 0 0 14px; }
 .project-item:last-child { border-bottom: 1px solid var(--border); }
 .project-item h2 { margin: 0 0 8px; font-size: 25px; }
 .project-heading { display: flex; align-items: baseline; gap: 24px; }
-.project-heading time { color: var(--secondary); font-family: "Times New Roman", Times, serif; font-size: 17px; font-style: italic; font-variant-numeric: tabular-nums; }
+.project-heading time { color: var(--secondary); font-family: "Times New Roman", Times, serif; font-size: 17px; font-style: normal; font-variant-numeric: tabular-nums; }
 .project-item p { color: var(--body-copy); }
 .project-meta { margin: 0 !important; color: var(--secondary) !important; font-size: 13px; }
 footer { padding: 26px 0 42px; border-top: 1px solid var(--border); color: var(--secondary); font-size: 15px; }
