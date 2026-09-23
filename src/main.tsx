@@ -8,6 +8,13 @@ const navigation = [["Home", "/"], ["About", "/about/"], ["Writing", "/writing/"
 
 const writingEntries = [
   {
+    date: "2026.09.23",
+    title: "Diffusion Model",
+    description: "Notes on denoising diffusion probabilistic models — from the forward noising chain and the ELBO derivation to the reverse process that generates samples.",
+    format: "PDF",
+    href: "/pdfs/DiffusionM.pdf"
+  },
+  {
     date: "2026.08.18",
     title: "Fundamentals of Linear Algebra",
     description: "Notes on vectors, linear combinations, and the basic language of linear algebra.",
