@@ -1,0 +1,136 @@
+\section{从 VAE 的似然下界到 DDPM 的下界}
+
+\subsection{似然算不出来，那就找一个下界}
+
+回到式~\eqref{eq:gen-general}。以 VAE 为例，模型分布是
+\begin{equation}
+  p_\theta(\bx)=\int_{\bz} p(\bz)\,p_\theta(\bx\mid\bz)\,\mathrm{d}\bz,
+  \qquad
+  p_\theta(\bx\mid\bz)\propto\exp\!\Bigl(-\tfrac{1}{2\sigma^2}\bigl\|G_\theta(\bz)-\bx\bigr\|^2\Bigr),
+  \label{eq:vae-likelihood}
+\end{equation}
+即解码器输出的是一个均值为 $G_\theta(\bz)$ 的高斯。这个积分一般没有解析解，也不便于直接最大化。
+标准的出路是引入一个\emph{任意}的辅助分布 $q(\bz\mid\bx)$（在 VAE 里它就是编码器），
+再用 Jensen 不等式把对数挪到期望里面去：
+\begin{equation}
+  \begin{aligned}
+    \log p_\theta(\bx)
+    &= \log \int_{\bz} p_\theta(\bx,\bz)\,\mathrm{d}\bz
+     = \log \int_{\bz} q(\bz\mid\bx)\,\frac{p_\theta(\bx,\bz)}{q(\bz\mid\bx)}\,\mathrm{d}\bz \\
+    &\ge \int_{\bz} q(\bz\mid\bx)\log\frac{p_\theta(\bx,\bz)}{q(\bz\mid\bx)}\,\mathrm{d}\bz
+     = \E_{q(\bz\mid\bx)}\Bigl[\log\frac{p_\theta(\bx,\bz)}{q(\bz\mid\bx)}\Bigr]
+     \eqqcolon \mathcal{L}(\bx),
+  \end{aligned}
+  \label{eq:elbo}
+\end{equation}
+其中第一步用了 $\log\int=\log\E$，第二步用了 Jensen 不等式 $\log\E[\cdot]\ge\E[\log\cdot]$。
+这一项称为\emph{证据下界}（evidence lower bound, ELBO），取等号当且仅当
+$q(\bz\mid\bx)=p_\theta(\bz\mid\bx)$。把 $\log\frac{p_\theta(\bx,\bz)}{q(\bz\mid\bx)}$ 拆开，得到
+更熟悉的形式
+\begin{equation}
+  \mathcal{L}(\bx)
+  = \underbrace{\E_{q(\bz\mid\bx)}\bigl[\log p_\theta(\bx\mid\bz)\bigr]}_{\text{重构项}}
+  - \underbrace{\Dkl\bigl(q(\bz\mid\bx)\,\|\,p(\bz)\bigr)}_{\text{把编码器拉向先验}}.
+  \label{eq:elbo-vae}
+\end{equation}
+
+\subsection{扩散模型的似然}
+
+扩散模型把“一个隐变量 $\bz$”换成“一串隐变量 $\bx_1,\dots,\bx_T$”，于是
+\begin{equation}
+  \begin{aligned}
+    p_\theta(\bx_0)
+    &=\int p(\bx_T)\prod_{t=1}^{T}p_\theta(\bx_{t-1}\mid\bx_t)\,\mathrm{d}\bx_{1:T}, \\
+    p_\theta(\bx_{t-1}\mid\bx_t)
+    &\propto\exp\!\Bigl(-\tfrac{1}{2\sigma_t^2}
+      \bigl\|G_\theta(\bx_t)-\bx_{t-1}\bigr\|^2\Bigr),
+  \end{aligned}
+  \label{eq:ddpm-likelihood}
+\end{equation}
+形式上与式~\eqref{eq:vae-likelihood} 一模一样，只是积分从一个隐变量变成了一串。
+沿着式~\eqref{eq:elbo} 的路子照抄，把辅助分布取成\emph{前向过程}
+$q(\bx_{1:T}\mid\bx_0)=\prod_{t=1}^{T}q(\bx_t\mid\bx_{t-1})$，就得到
+
+\begin{equation}
+  \log p_\theta(\bx_0)\ \ge\
+  \mathcal{L}(\bx_0)=\E_{q(\bx_{1:T}\mid\bx_0)}
+  \Bigl[\log\frac{p_\theta(\bx_{0:T})}{q(\bx_{1:T}\mid\bx_0)}\Bigr].
+  \label{eq:ddpm-elbo}
+\end{equation}
+
+这里有一个非常漂亮的类比\cite{lee-ddpm}：\textbf{前向过程就是 VAE 里的编码器}。
+区别在于，这个“编码器”是人为设定、逐层加噪的，\emph{不含任何参数、也不需要学习}；
+而“解码器”$p_\theta(\bx_{t-1}\mid\bx_t)$ 需要学习，且不是一层，而是 $T$ 层。
+表~\ref{tab:vae-vs-diff} 把两者的对应关系列了出来。
+
+\begin{table}[htbp]
+  \centering
+  \caption{VAE 与扩散模型的逐项对照}
+  \label{tab:vae-vs-diff}
+  \small
+  \renewcommand{\arraystretch}{1.35}
+  \setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}l p{4.6cm} p{5.6cm}@{}}
+    \toprule
+     & VAE & 扩散模型 \\
+    \midrule
+    隐变量       & $\bz$，低维           & $\bx_1,\dots,\bx_T$，共 $T$ 个，与数据同维 \\
+    编码器       & $q_\phi(\bz\mid\bx)$，需要学习 & $q(\bx_{1:T}\mid\bx_0)$，固定、无参数 \\
+    解码器       & $p_\theta(\bx\mid\bz)$，一层     & $p_\theta(\bx_{t-1}\mid\bx_t)$，$T$ 层，需学习 \\
+    训练目标     & 式~\eqref{eq:elbo-vae} 的 ELBO & 式~\eqref{eq:ddpm-elbo} 的 ELBO \\
+    主要代价     & 结果偏模糊、后验易坍缩 & 采样需要 $T$ 次网络前向，慢 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{下界的三项分解}
+
+把 $p_\theta(\bx_{0:T})=p(\bx_T)\prod_{t=1}^{T}p_\theta(\bx_{t-1}\mid\bx_t)$ 与
+$q(\bx_{1:T}\mid\bx_0)=\prod_{t=1}^{T}q(\bx_t\mid\bx_{t-1})$ 代入式~\eqref{eq:ddpm-elbo}，
+再对 $t\ge 2$ 的每一对相邻项用贝叶斯公式
+\begin{equation}
+  q(\bx_t\mid\bx_{t-1})
+  = \frac{q(\bx_{t-1}\mid\bx_t,\bx_0)\,q(\bx_t\mid\bx_0)}{q(\bx_{t-1}\mid\bx_0)}
+  \qquad(\text{因为 } q(\bx_t\mid\bx_{t-1},\bx_0)=q(\bx_t\mid\bx_{t-1})),
+  \label{eq:bayes-trick}
+\end{equation}
+$q(\bx_t\mid\bx_0)/q(\bx_{t-1}\mid\bx_0)$ 这两项在求和时会\emph{相邻相消}（telescoping），
+最后只剩首尾两项。整理后得到 DDPM 论文中的经典分解\cite{ho2020ddpm}（完整步骤见附录~\ref{app:elbo}）：
+\begin{equation}
+  \log p_\theta(\bx_0)\ \ge\ -\bigl(L_T+\textstyle\sum_{t=2}^{T}L_{t-1}+L_0\bigr),
+  \label{eq:elbo-three}
+\end{equation}
+其中三项分别是
+\begin{equation}
+  \left\{
+  \begin{aligned}
+    L_T      &= \Dkl\bigl(q(\bx_T\mid\bx_0)\,\|\,p(\bx_T)\bigr),
+      &&\text{常数项，与 }\theta\text{ 无关}; \\
+    L_{t-1}  &= \Dkl\bigl(q(\bx_{t-1}\mid\bx_t,\bx_0)\,\|\,p_\theta(\bx_{t-1}\mid\bx_t)\bigr),
+      &&\text{主项，共 }T-1\text{ 项}; \\
+    L_0      &= -\log p_\theta(\bx_0\mid\bx_1),
+      &&\text{重构项}.
+  \end{aligned}
+  \right.
+  \label{eq:elbo-terms}
+\end{equation}
+
+于是\textbf{训练扩散模型 = 最小化 $L_T+\sum_{t=2}^{T}L_{t-1}+L_0$}。
+逐项看一眼：
+
+\begin{itemize}
+  \item $L_T$ 只由噪声调度决定，$p(\bx_T)=\Ncal(\bzero,\bI)$ 是固定的先验，
+        只要调度让 $\bar\alpha_T\to 0$，$q(\bx_T\mid\bx_0)$ 就已经接近 $\Ncal(\bzero,\bI)$，
+        这一项几乎为 $0$，所以直接丢掉；
+  \item $L_{t-1}$ 是全部的工作量所在。它在“网络给出的反向分布”与“真实后验”之间算 KL，
+        而\emph{真实后验 $q(\bx_{t-1}\mid\bx_t,\bx_0)$ 是一个已知的、可以解析写出的高斯}——
+        这正是下一节要用的关键事实；
+  \item $L_0$ 是最后一跳的似然，实践中通常把它并入 $t=1$ 的那一项，
+        或对像素做离散化后按 $\{0,\dots,255\}$ 的分段高斯处理。
+\end{itemize}
+
+\begin{keybox}[本节的落点]
+$L_{t-1}$ 里的两个分布都是高斯，且方差都可以固定为常数，于是 KL 散度\emph{退化成两个均值之间的
+平方误差}。所以“用变分推断推出的下界”最终会变成一个极其朴素的回归问题——
+这既是扩散模型好训的原因，也是它一开始让人意外的地方。
+\end{keybox}

@@ -1,0 +1,104 @@
+\section{两个高斯分布的常用结论}
+
+\subsection{独立高斯之和仍是高斯}
+\label{app:gauss-sum}
+
+\begin{proposition}
+设 $\beps_1\sim\Ncal(\bzero,\sigma_1^2\bI)$、$\beps_2\sim\Ncal(\bzero,\sigma_2^2\bI)$ 相互独立，
+$a,b\in\mathbb{R}$，则
+\begin{equation}
+  a\,\beps_1+b\,\beps_2\ \sim\ \Ncal\bigl(\bzero,\ (a^2\sigma_1^2+b^2\sigma_2^2)\bI\bigr).
+  \label{eq:gauss-sum}
+\end{equation}
+\end{proposition}
+
+\begin{pf}
+设 $\bm{t}\in\mathbb{R}^d$，用特征函数。由于 $\beps_1,\beps_2$ 独立，
+\begin{equation}
+  \E\bigl[e^{\mathrm{i}\bm{t}^{\top}(a\beps_1+b\beps_2)}\bigr]
+  =\E\bigl[e^{\mathrm{i}a\bm{t}^{\top}\beps_1}\bigr]\cdot\E\bigl[e^{\mathrm{i}b\bm{t}^{\top}\beps_2}\bigr]
+  =e^{-\frac{1}{2}a^2\sigma_1^2\|\bm{t}\|^2}\cdot e^{-\frac{1}{2}b^2\sigma_2^2\|\bm{t}\|^2}
+  =e^{-\frac{1}{2}(a^2\sigma_1^2+b^2\sigma_2^2)\|\bm{t}\|^2},
+\end{equation}
+这正是零均值高斯 $\Ncal(\bzero,(a^2\sigma_1^2+b^2\sigma_2^2)\bI)$ 的特征函数，
+由特征函数与分布的一一对应即得结论。
+\end{pf}
+
+这个结论在正文中被用了两次：一次是在前向闭式解的归纳法里
+（式~\eqref{eq:forward-induction}），把两步噪声合并成一步；
+另一次是在推导 $\tilde{\bmu}_t$ 时把“关于 $\bx_{t-1}$ 的二次型”配方成高斯。
+
+\subsection{两个高斯之间的 KL 散度}
+\label{app:kl-gauss}
+
+\begin{proposition}
+设 $\bmu_1,\bmu_2\in\mathbb{R}^d$，$\bm{\Sigma}_1,\bm{\Sigma}_2$ 为 $d\times d$ 正定矩阵，则
+\begin{equation}
+  \begin{aligned}
+  \Dkl\bigl(\Ncal(\bmu_1,\bm{\Sigma}_1)\,\big\|\,\Ncal(\bmu_2,\bm{\Sigma}_2)\bigr)
+  =\frac{1}{2}\Bigl[&\operatorname{tr}\bigl(\bm{\Sigma}_2^{-1}\bm{\Sigma}_1\bigr)
+   +(\bmu_2-\bmu_1)^{\top}\bm{\Sigma}_2^{-1}(\bmu_2-\bmu_1) \\
+   &-d+\ln\frac{\det\bm{\Sigma}_2}{\det\bm{\Sigma}_1}\Bigr].
+  \end{aligned}
+  \label{eq:kl-gauss}
+\end{equation}
+特别地，当两者协方差相同（$\bm{\Sigma}_1=\bm{\Sigma}_2=\sigma^2\bI$）时，
+只有均值不同，公式退化成
+\begin{equation}
+  \Dkl\bigl(\Ncal(\bmu_1,\sigma^2\bI)\,\big\|\,\Ncal(\bmu_2,\sigma^2\bI)\bigr)
+  =\frac{1}{2\sigma^2}\bigl\|\bmu_1-\bmu_2\bigr\|^2 .
+  \label{eq:kl-gauss-equal-var}
+\end{equation}
+\end{proposition}
+
+式~\eqref{eq:kl-gauss-equal-var} 就是正文式~\eqref{eq:Lt-kl} 的来源：
+它把“两个分布有多远”这件事，换成了“两个均值差多少”这件更简单的事，
+而后者正好可以用平方误差来优化。
+
+\subsection{ELBO 三项分解的完整展开}
+\label{app:elbo}
+
+从式~\eqref{eq:ddpm-elbo} 出发，把两个链式乘积代入：
+\begin{equation}
+  \begin{aligned}
+    \mathcal{L}(\bx_0)
+    &=\E_q\Bigl[\log p(\bx_T)+\sum_{t=1}^{T}\log p_\theta(\bx_{t-1}\mid\bx_t)
+      -\sum_{t=1}^{T}\log q(\bx_t\mid\bx_{t-1})\Bigr] \\
+    &=\E_q\Bigl[\log p(\bx_T)+\log p_\theta(\bx_0\mid\bx_1) \\
+    &\qquad\qquad+\sum_{t=2}^{T}\log p_\theta(\bx_{t-1}\mid\bx_t)
+      -\sum_{t=2}^{T}\log q(\bx_t\mid\bx_{t-1})-\log q(\bx_1\mid\bx_0)\Bigr].
+  \end{aligned}
+  \label{eq:app-elbo-1}
+\end{equation}
+对 $t\ge2$ 的每一对相邻项用贝叶斯公式~\eqref{eq:bayes-trick}：
+\begin{equation}
+  \begin{aligned}
+    \sum_{t=2}^{T}\log q(\bx_t\mid\bx_{t-1})
+    &=\sum_{t=2}^{T}\log q(\bx_{t-1}\mid\bx_t,\bx_0) \\
+    &\quad+\underbrace{\sum_{t=2}^{T}\bigl[\log q(\bx_t\mid\bx_0)-\log q(\bx_{t-1}\mid\bx_0)\bigr]}_{\text{相消}},
+  \end{aligned}
+  \label{eq:app-elbo-2}
+\end{equation}
+后一个求和是相邻两项的差，只剩首尾：$\log q(\bx_T\mid\bx_0)-\log q(\bx_1\mid\bx_0)$。
+代回式~\eqref{eq:app-elbo-1}，其中 $-\log q(\bx_1\mid\bx_0)$ 恰好被抵消，于是
+\begin{equation}
+  \mathcal{L}(\bx_0)
+  =\E_q\Bigl[\log p_\theta(\bx_0\mid\bx_1)
+   -\sum_{t=2}^{T}\log\frac{q(\bx_{t-1}\mid\bx_t,\bx_0)}{p_\theta(\bx_{t-1}\mid\bx_t)}
+   -\log\frac{q(\bx_T\mid\bx_0)}{p(\bx_T)}\Bigr].
+  \label{eq:app-elbo-3}
+\end{equation}
+现在逐项看：对固定的 $t$，第二项里除 $\bx_t$ 之外的变量都能积掉，期望退化为
+$\E_{q(\bx_t\mid\bx_0)}\bigl[\Dkl(q(\bx_{t-1}\mid\bx_t,\bx_0)\|p_\theta(\bx_{t-1}\mid\bx_t))\bigr]$；
+第三项就是 $\Dkl(q(\bx_T\mid\bx_0)\|p(\bx_T))$；第一项是 $-\log p_\theta(\bx_0\mid\bx_1)$ 的期望。于是
+\begin{equation}
+  \begin{aligned}
+    \mathcal{L}(\bx_0)
+    &=-\underbrace{\Dkl\bigl(q(\bx_T\mid\bx_0)\|p(\bx_T)\bigr)}_{L_T} \\
+    &\quad-\sum_{t=2}^{T}\underbrace{\E_{q(\bx_t\mid\bx_0)}
+      \bigl[\Dkl\bigl(q(\bx_{t-1}\mid\bx_t,\bx_0)\|p_\theta(\bx_{t-1}\mid\bx_t)\bigr)\bigr]}_{L_{t-1}} \\
+    &\quad-\underbrace{\E\bigl[-\log p_\theta(\bx_0\mid\bx_1)\bigr]}_{L_0},
+  \end{aligned}
+  \label{eq:app-elbo-4}
+\end{equation}
+即 $\mathcal{L}(\bx_0)=-(L_T+\sum_{t=2}^{T}L_{t-1}+L_0)$，与正文式~\eqref{eq:elbo-three} 一致。

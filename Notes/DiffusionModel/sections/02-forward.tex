@@ -1,0 +1,185 @@
+\section{前向扩散过程}
+
+\subsection{单步加噪}
+
+\begin{definition}[前向扩散过程]
+给定噪声调度 $\{\beta_1,\dots,\beta_T\}$，$\beta_t\in(0,1)$，前向过程按如下\emph{马尔可夫链}
+逐步给数据加噪：
+\begin{equation}
+  q(\bx_t\mid\bx_{t-1})
+  = \Ncal\Bigl(\bx_t;\ \sqrt{1-\beta_t}\,\bx_{t-1},\ \beta_t\bI\Bigr),
+  \qquad t=1,2,\dots,T,
+  \label{eq:forward-step}
+\end{equation}
+等价地写成重参数化的形式
+\begin{equation}
+  \bx_t = \sqrt{1-\beta_t}\,\bx_{t-1} + \sqrt{\beta_t}\,\beps_{t-1},
+  \qquad \beps_{t-1}\sim\Ncal(\bzero,\bI)\ \text{相互独立}.
+  \label{eq:forward-step-reparam}
+\end{equation}
+记 $\alpha_t = 1-\beta_t$，则整条链的联合分布为
+$q(\bx_{1:T}\mid\bx_0)=\prod_{t=1}^{T}q(\bx_t\mid\bx_{t-1})$。
+\end{definition}
+
+\begin{remark}[为什么系数是 $\sqrt{1-\beta_t}$ 而不是 $1$]
+式~\eqref{eq:forward-step-reparam} 里信号的系数与噪声的系数是一对平方和为 $1$ 的数：
+$(\sqrt{1-\beta_t})^2+(\sqrt{\beta_t})^2=1$。若 $\bx_{t-1}$ 的各维独立、均值为 $0$、方差为 $1$，
+那么 $\bx_t$ 的方差为 $(1-\beta_t)\cdot 1+\beta_t=1$，\emph{方差始终为 $1$}。
+这个约定称为保方差（variance preserving）。反之若写成 $\bx_t=\bx_{t-1}+\sqrt{\beta_t}\beps$，
+方差会随 $t$ 线性增长，到 $T=1000$ 时信号会被彻底淹没，网络也就学不动了。
+\end{remark}
+
+\subsection{任意时刻的闭式解}
+
+逐层递推 $T$ 次显然不可行。但幸运的是，由于每一步都是高斯，整条链可以被\textbf{一步折叠}，
+直接写出任意 $t$ 时刻 $\bx_t$ 关于 $\bx_0$ 的分布——这是扩散模型最核心的一条性质。
+
+\begin{proposition}[前向过程的闭式解]
+\label{prop:forward-closed}
+对任意 $t=1,\dots,T$，
+\begin{equation}
+  q(\bx_t\mid\bx_0)=\Ncal\Bigl(\bx_t;\ \sqrt{\abt}\,\bx_0,\ (1-\abt)\bI\Bigr),
+  \label{eq:forward-closed}
+\end{equation}
+即
+\begin{equation}
+  \boxed{\ \bx_t=\sqrt{\abt}\,\bx_0+\sqrt{1-\abt}\,\beps,\qquad \beps\sim\Ncal(\bzero,\bI).\ }
+  \label{eq:forward-closed-reparam}
+\end{equation}
+\end{proposition}
+
+\begin{pf}
+对 $t$ 归纳。$t=1$ 时即为定义式~\eqref{eq:forward-step-reparam}。
+设 $t-1$ 时命题成立，即 $\bx_{t-1}=\sqrt{\bar\alpha_{t-1}}\,\bx_0+\sqrt{1-\bar\alpha_{t-1}}\,\beps'$，
+代入单步公式并合并同类项：
+\begin{equation}
+  \begin{aligned}
+    \bx_t
+    &= \sqrt{\alpha_t}\,\bx_{t-1}+\sqrt{\beta_t}\,\beps''
+     = \sqrt{\alpha_t\bar\alpha_{t-1}}\,\bx_0
+       + \underbrace{\sqrt{\alpha_t(1-\bar\alpha_{t-1})}\,\beps'+\sqrt{\beta_t}\,\beps''}_{\text{两个独立零均值高斯之和}} .
+  \end{aligned}
+  \label{eq:forward-induction}
+\end{equation}
+由附录~\ref{app:gauss-sum}，两个独立的零均值高斯之和仍是零均值高斯，其方差为两者方差之和：
+\begin{equation}
+  \alpha_t\,(1-\bar\alpha_{t-1})+\beta_t
+  = \alpha_t-\alpha_t\bar\alpha_{t-1}+1-\alpha_t
+  = 1-\alpha_t\bar\alpha_{t-1}
+  = 1-\abt .
+  \label{eq:forward-variance}
+\end{equation}
+又 $\sqrt{\alpha_t\bar\alpha_{t-1}}=\sqrt{\abt}$，故 $\bx_t$ 服从式~\eqref{eq:forward-closed}。
+归纳完成。
+\end{pf}
+
+\begin{corollary}[起点的分布是已知的]
+令 $t=T$ 得 $q(\bx_T\mid\bx_0)=\Ncal(\bx_T;\sqrt{\bar\alpha_T}\,\bx_0,(1-\bar\alpha_T)\bI)$。
+只要调度使得 $\bar\alpha_T\to 0$，就有 $\bx_T\to\Ncal(\bzero,\bI)$ 且\emph{与 $\bx_0$ 无关}。
+这保证了反向过程有一个已知的、可以直接采样的起点：从标准高斯里取一个噪声，就能开始生成。
+\end{corollary}
+
+\subsection{训练时的「想像中」与「实际上」}
+
+按定义，要得到一个含噪样本 $\bx_t$ 似乎必须老老实实走 $t$ 步。但命题~\ref{prop:forward-closed} 告诉我们
+可以\emph{一步算出}。这一点在教学材料中常被专门拿出来强调，因为它是扩散模型能够高效训练的
+关键，也是初学者最容易忽略的地方\cite{lee-ddpm}。
+
+\begin{keybox}[一句话记住 $\bx_t$ 的来源]
+\begin{center}
+  \textbf{想像中}：$\bx_0 \xrightarrow{\ \sqrt{\beta_1}\beps_1\ } \bx_1
+                  \xrightarrow{\ \sqrt{\beta_2}\beps_2\ } \bx_2
+                  \xrightarrow{\ \cdots\ } \bx_t$
+                  \quad（逐步加噪，$t$ 次）\\[0.9ex]
+  \textbf{实际上}：$\bx_0,\ \beps \xrightarrow{\ \text{式}\eqref{eq:forward-closed-reparam}\ }
+                  \bx_t$ \quad（一次算出，$O(1)$）
+\end{center}
+训练时随机采一个 $t$、再采一个 $\beps$，直接用闭式解造出 $\bx_t$，
+并以当初加进去的 $\beps$ 作为监督目标。全程只做一次加噪，与 $t$ 无关。
+\end{keybox}
+
+\subsection{噪声调度与信噪比}
+
+$\abt$ 随 $t$ 单调递减：$t$ 越大，剩下的信号越少。刻画“信号还剩多少”的常用量是\emph{信噪比}
+\begin{equation}
+  \mathrm{SNR}(t)=\frac{\abt}{1-\abt},
+  \label{eq:snr}
+\end{equation}
+它同样单调递减，从 $t=1$ 时的约 $10^4$ 一路降到 $t=1000$ 时的 $10^{-5}$ 量级。
+$\{\beta_t\}$ 的取法称为噪声调度，常见两种\cite{ho2020ddpm,nichol2021improved}：
+
+\begin{itemize}
+  \item \textbf{线性调度}：$\beta_t$ 从 $\beta_1=10^{-4}$ 线性增到 $\beta_T=2\times10^{-2}$，$T=1000$。
+        实现最简单，但两端变化过快、中间过于平坦；
+  \item \textbf{余弦调度}：令
+        $\abt=\dfrac{\cos^2\!\bigl(\frac{\pi}{2}\cdot\frac{t/T+s}{1+s}\bigr)}{\cos^2\!\bigl(\frac{\pi}{2}\cdot\frac{s}{1+s}\bigr)}$，
+        $s\approx 0.008$。它让 $\abt$ 的下降更均匀，低噪声阶段保留信号更久，实践中生成质量更好。
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}[c]{0.47\textwidth}
+    \centering
+    \resizebox{\linewidth}{!}{%
+    \begin{tikzpicture}
+      \begin{axis}[
+        width=\textwidth, height=5.2cm,
+        xlabel={扩散步 $t$}, ylabel={$\abt$},
+        xmin=0, xmax=1000, ymin=0, ymax=1.06,
+        domain=0:1000, samples=161,
+        axis lines=left,
+        every axis label/.style={font=\footnotesize\sffamily, text=dmNavy},
+        tick label style={font=\scriptsize, text=dmGray},
+        legend style={font=\scriptsize, draw=dmGray!40, fill=white,
+                      at={(0.97,0.97)}, anchor=north east},
+        label style={font=\scriptsize},
+      ]
+        \addplot[dmNavy, very thick]
+          {exp(-(x*0.0001 + 0.0199*x*(x-1)/1998))};
+        \addlegendentry{线性调度}
+        \addplot[dmSteel, very thick, dashed]
+          {(cos(deg(pi/2*(x/1000+0.008)/1.008)))^2/(cos(deg(pi/2*0.008/1.008)))^2};
+        \addlegendentry{余弦调度}
+      \end{axis}
+    \end{tikzpicture}}
+    \\[-0.4em]
+    {\footnotesize\sffamily 信号保留比例 $\abt$}
+  \end{minipage}\hfill
+  \begin{minipage}[c]{0.47\textwidth}
+    \centering
+    \resizebox{\linewidth}{!}{%
+    \begin{tikzpicture}
+      \begin{axis}[
+        width=\textwidth, height=5.2cm,
+        xlabel={扩散步 $t$}, ylabel={$\mathrm{SNR}(t)$},
+        xmin=1, xmax=1000, ymode=log,
+        ymin=1e-5, ymax=1e5,
+        domain=1:1000, samples=161,
+        axis lines=left,
+        every axis label/.style={font=\footnotesize\sffamily, text=dmNavy},
+        tick label style={font=\scriptsize, text=dmGray},
+        legend style={font=\scriptsize, draw=dmGray!40, fill=white,
+                      at={(0.97,0.03)}, anchor=south east},
+        label style={font=\scriptsize},
+      ]
+        \addplot[dmNavy, very thick]
+          {exp(-(x*0.0001 + 0.0199*x*(x-1)/1998))
+           /(1-exp(-(x*0.0001 + 0.0199*x*(x-1)/1998)))};
+        \addlegendentry{线性调度}
+        \addplot[dmSteel, very thick, dashed]
+          {((cos(deg(pi/2*(x/1000+0.008)/1.008)))^2/(cos(deg(pi/2*0.008/1.008)))^2)
+           /(1-((cos(deg(pi/2*(x/1000+0.008)/1.008)))^2/(cos(deg(pi/2*0.008/1.008)))^2))};
+        \addlegendentry{余弦调度}
+      \end{axis}
+    \end{tikzpicture}}
+    \\[-0.4em]
+    {\footnotesize\sffamily 信噪比 $\mathrm{SNR}=\abt/(1-\abt)$}
+  \end{minipage}
+  \caption{两种噪声调度下 $\abt$ 与信噪比随扩散步的变化。线性调度的曲线由
+    $\abt\approx\exp\bigl(-\sum_{s\le t}\beta_s\bigr)$ 给出}
+  \label{fig:schedule}
+\end{figure}
+
+图~\ref{fig:schedule} 对比了两种调度。可以看到线性调度在 $t\approx 250$ 时就已经把一半以上的信号
+换成了噪声，而余弦调度要到 $t\approx 500$ 才降到同一水平。这意味着余弦调度把更多的“容量”
+留给了中等噪声区间，而这个区间恰恰是反向过程最难学、也最影响生成细节的部分。

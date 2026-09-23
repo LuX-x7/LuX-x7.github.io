@@ -1,0 +1,219 @@
+\section{反向过程与训练目标}
+
+\subsection{反向过程的参数化}
+
+反向过程是真正需要学习的部分。它的形式是
+
+\begin{equation}
+  p_\theta(\bx_{0:T})=p(\bx_T)\prod_{t=1}^{T}p_\theta(\bx_{t-1}\mid\bx_t),
+  \qquad
+  p(\bx_T)=\Ncal(\bzero,\bI),
+  \label{eq:reverse-chain}
+\end{equation}
+其中每一步取\emph{均值由网络给出、方差固定}的高斯：
+\begin{equation}
+  p_\theta(\bx_{t-1}\mid\bx_t)
+  = \Ncal\Bigl(\bx_{t-1};\ \bmu_\theta(\bx_t,t),\ \sigma_t^2\bI\Bigr),
+  \qquad t=T,T-1,\dots,1 .
+  \label{eq:reverse-step}
+\end{equation}
+只让网络决定均值、方差取一个预先定好的 $\sigma_t^2$，是 DDPM 的关键简化：一方面让后面
+$L_{t-1}$ 中的两个高斯方差相同，KL 有干净的闭式；另一方面少了一个学习目标，训练更稳。
+
+\begin{remark}[和 VAE 解码器的差别]
+VAE 的解码器把低维的 $\bz$ 映回高维的 $\bx$，一次跳很远，所以容易模糊；
+扩散模型的每一步只把 $\bx_t$ 挪动一点点到 $\bx_{t-1}$，输入输出几乎逐像素对应，
+于是网络实际上是在做“去一点点噪声”这件非常简单的事。$T$ 步串起来，累计的效果就很强。
+\end{remark}
+
+\subsection{真实后验的闭式解}
+
+上一节说过，$L_{t-1}$ 里出现的 $q(\bx_{t-1}\mid\bx_t,\bx_0)$ 是已知的。
+下面把它写出来——这是整篇推导里最需要动手的一块代数。
+
+\begin{proposition}[前向过程的后验]
+\label{prop:posterior}
+对 $t\ge 2$，
+\begin{equation}
+  q(\bx_{t-1}\mid\bx_t,\bx_0)
+  = \Ncal\Bigl(\bx_{t-1};\ \tilde{\bmu}_t(\bx_t,\bx_0),\ \tilde\beta_t\bI\Bigr),
+  \label{eq:posterior}
+\end{equation}
+其中
+\begin{equation}
+  \tilde{\bmu}_t(\bx_t,\bx_0)
+  = \frac{\sqrt{\bar\alpha_{t-1}}\,\beta_t\,\bx_0+\sqrt{\alpha_t}\,(1-\bar\alpha_{t-1})\,\bx_t}{1-\abt},
+  \qquad
+  \tilde\beta_t=\frac{1-\bar\alpha_{t-1}}{1-\abt}\,\beta_t .
+  \label{eq:posterior-mean-var}
+\end{equation}
+\end{proposition}
+
+\begin{pf}
+由贝叶斯公式并把 $q(\bx_t\mid\bx_{t-1},\bx_0)=q(\bx_t\mid\bx_{t-1})$ 代入，
+\begin{equation}
+  q(\bx_{t-1}\mid\bx_t,\bx_0)
+  =\frac{q(\bx_t\mid\bx_{t-1})\,q(\bx_{t-1}\mid\bx_0)}{q(\bx_t\mid\bx_0)} ,
+  \label{eq:posterior-bayes}
+\end{equation}
+分母与 $\bx_{t-1}$ 无关，只需看分子。分子的两个因子都是已知高斯：
+\begin{equation}
+  \begin{aligned}
+    q(\bx_t\mid\bx_{t-1})
+    &\propto \exp\Bigl(-\frac{\bigl\|\bx_t-\sqrt{\alpha_t}\,\bx_{t-1}\bigr\|^2}{2\beta_t}\Bigr), \\
+    q(\bx_{t-1}\mid\bx_0)
+    &\propto \exp\Bigl(-\frac{\bigl\|\bx_{t-1}-\sqrt{\bar\alpha_{t-1}}\,\bx_0\bigr\|^2}{2(1-\bar\alpha_{t-1})}\Bigr).
+  \end{aligned}
+  \label{eq:posterior-factors}
+\end{equation}
+把指数相加，写成关于 $\bx_{t-1}$ 的二次型
+$-\frac{1}{2}\bigl(A\|\bx_{t-1}\|^2-2\,\bx_{t-1}^{\top}\bm{b}\bigr)+C$，其中
+\begin{equation}
+  \begin{aligned}
+    A&=\frac{\alpha_t}{\beta_t}+\frac{1}{1-\bar\alpha_{t-1}}
+     =\frac{\alpha_t(1-\bar\alpha_{t-1})+\beta_t}{\beta_t(1-\bar\alpha_{t-1})}
+     =\frac{1-\abt}{\beta_t(1-\bar\alpha_{t-1})}, \\
+    \bm{b}&=\frac{\sqrt{\alpha_t}}{\beta_t}\,\bx_t
+     +\frac{\sqrt{\bar\alpha_{t-1}}}{1-\bar\alpha_{t-1}}\,\bx_0 .
+  \end{aligned}
+  \label{eq:posterior-ab}
+\end{equation}
+二次型配方即得高斯 $\Ncal\bigl(\bm{b}/A,\ A^{-1}\bI\bigr)$。代回
+$A^{-1}=\dfrac{\beta_t(1-\bar\alpha_{t-1})}{1-\abt}=\tilde\beta_t$，
+并整理 $\bm{b}/A$ 便得到式~\eqref{eq:posterior-mean-var}。
+\end{pf}
+
+这个命题的意义在于：它把一条 $T$ 步的链，压缩成了\emph{任意一对相邻状态之间的条件分布}。
+有了它，$L_{t-1}$ 里“真实后验 vs 网络输出”的对比就变成了两个显式高斯之间的对比。
+
+\subsection{从“预测均值”到“预测噪声”}
+
+有了命题~\ref{prop:posterior}，就可以把 $L_{t-1}$ 写开了。取 $\sigma_t^2=\beta_t$，
+由附录~\ref{app:kl-gauss} 的高斯 KL 公式（两者方差相同，只有均值不同）：
+\begin{equation}
+  L_{t-1}
+  =\E_{q(\bx_t\mid\bx_0)}\Bigl[\Dkl\bigl(\Ncal(\tilde{\bmu}_t,\beta_t\bI)\,\big\|\,\Ncal(\bmu_\theta,\beta_t\bI)\bigr)\Bigr]
+  =\E_{q(\bx_t\mid\bx_0)}\Bigl[\frac{1}{2\beta_t}\bigl\|\tilde{\bmu}_t-\bmu_\theta(\bx_t,t)\bigr\|^2\Bigr].
+  \label{eq:Lt-kl}
+\end{equation}
+于是最小化 $L_{t-1}$，就是让网络输出的均值去逼近 $\tilde{\bmu}_t$。
+
+问题是 $\tilde{\bmu}_t$ 里含 $\bx_0$，而 $\bx_0$ 恰好是我们想生成的东西，采样时根本拿不到。
+出路是利用重参数化把 $\bx_0$ \emph{解出来}：
+\begin{equation}
+  \bx_t=\sqrt{\abt}\,\bx_0+\sqrt{1-\abt}\,\beps
+  \quad\Longrightarrow\quad
+  \bx_0=\frac{\bx_t-\sqrt{1-\abt}\,\beps}{\sqrt{\abt}} .
+  \label{eq:x0-from-eps}
+\end{equation}
+代回式~\eqref{eq:posterior-mean-var} 中的 $\tilde{\bmu}_t$ 并整理，得到一个只含 $\bx_t$ 与 $\beps$ 的
+漂亮形式
+\begin{equation}
+  \boxed{\ \tilde{\bmu}_t=\frac{1}{\sqrt{\alpha_t}}
+    \Bigl(\bx_t-\frac{\beta_t}{\sqrt{1-\abt}}\,\beps\Bigr).\ }
+  \label{eq:mu-from-eps}
+\end{equation}
+换言之：\emph{“这一步该往哪走”完全由“这一步被加了什么噪声”决定}，不需要知道 $\bx_0$。
+既然 $\beps$ 未知，就干脆让网络直接去预测它。取
+\begin{equation}
+  \bmu_\theta(\bx_t,t)=\frac{1}{\sqrt{\alpha_t}}
+  \Bigl(\bx_t-\frac{\beta_t}{\sqrt{1-\abt}}\,\beps_\theta(\bx_t,t)\Bigr),
+  \label{eq:mu-theta}
+\end{equation}
+代回式~\eqref{eq:Lt-kl}，两个均值之差变成
+\begin{equation}
+  \bigl\|\tilde{\bmu}_t-\bmu_\theta\bigr\|^2
+  =\frac{\beta_t^2}{\alpha_t\,(1-\abt)}\,\bigl\|\beps-\beps_\theta(\bx_t,t)\bigr\|^2 ,
+  \label{eq:mean-diff}
+\end{equation}
+于是
+\begin{equation}
+  L_{t-1}=w_t\,\E\Bigl[\bigl\|\beps-\beps_\theta(\bx_t,t)\bigr\|^2\Bigr],
+  \qquad
+  w_t=\frac{\beta_t^2}{2\sigma_t^2\,\alpha_t\,(1-\abt)} .
+  \label{eq:Lt-weighted}
+\end{equation}
+
+\begin{remark}[式~\eqref{eq:mu-from-eps} 的验算]
+把 $\beps=(\bx_t-\sqrt{\abt}\bx_0)/\sqrt{1-\abt}$ 代进去：
+\begin{equation}
+  \frac{1}{\sqrt{\alpha_t}}\Bigl(\bx_t-\frac{\beta_t}{1-\abt}\bigl(\bx_t-\sqrt{\abt}\bx_0\bigr)\Bigr)
+  =\frac{\sqrt{\alpha_t}\,(1-\bar\alpha_{t-1})}{1-\abt}\,\bx_t
+   +\frac{\sqrt{\bar\alpha_{t-1}}\,\beta_t}{1-\abt}\,\bx_0 ,
+\end{equation}
+最后恰好是式~\eqref{eq:posterior-mean-var} 中的 $\tilde{\bmu}_t$。
+\end{remark}
+
+\subsection{简化损失函数}
+
+最后一步：丢掉权重 $w_t$，并对所有 $t$ 取简单平均。DDPM 论文指出，
+去掉 $w_t$ 相当于给不同噪声等级的下界项重新加权，
+实验上\emph{反而}能得到更好的生成质量\cite{ho2020ddpm}。这样就得到了扩散模型最著名的那个目标函数：
+
+\begin{equation}
+  \boxed{\
+  \mathcal{L}_{\text{simple}}(\theta)
+  =\E_{\substack{t\sim\mathcal{U}\{1,\dots,T\}\\ \bx_0\sim p_{\text{data}},\ \beps\sim\Ncal(\bzero,\bI)}}
+  \Bigl[\bigl\|\beps-\beps_\theta\bigl(\sqrt{\abt}\,\bx_0+\sqrt{1-\abt}\,\beps,\ t\bigr)\bigr\|^2\Bigr].
+  \ }
+  \label{eq:l-simple}
+\end{equation}
+
+读一遍这个式子，它的内容朴素得有点出人意料：
+
+\begin{enumerate}
+  \item 取一张干净数据 $\bx_0$；
+  \item 随机采一个噪声等级 $t$，再采一撮标准高斯噪声 $\beps$；
+  \item 按闭式解合成含噪图 $\bx_t=\sqrt{\abt}\bx_0+\sqrt{1-\abt}\beps$；
+  \item 把 $\bx_t$ 和 $t$ 喂给网络，让它猜出刚才那撮噪声 $\beps$；
+  \item 用平方误差回传梯度。
+\end{enumerate}
+
+一个由变分推断严格推出的下界，最后化简成了“\emph{看图猜噪声}”这样一个回归任务。
+它形式上就是一个去噪自编码器（denoising autoencoder）的目标，也与
+去噪得分匹配（denoising score matching）等价\cite{vincent2011connection,song2021sde}。
+
+\begin{keybox}[预测噪声 $=$ 估计得分]
+由 $q(\bx_t\mid\bx_0)$ 的高斯形式可以直接求对数密度的梯度：
+\begin{equation*}
+  \nabla_{\bx_t}\log q(\bx_t\mid\bx_0)
+  =-\frac{\bx_t-\sqrt{\abt}\,\bx_0}{1-\abt}
+  =-\frac{\beps}{\sqrt{1-\abt}} .
+\end{equation*}
+边际得分 $\nabla_{\bx_t}\log q(\bx_t)=\E\bigl[\nabla_{\bx_t}\log q(\bx_t\mid\bx_0)\bigr]$，
+所以“预测噪声 $\beps_\theta$”与“估计数据分布的对数密度梯度”是同一件事的两种说法。
+这也解释了为什么扩散模型可以写成随机微分方程、并用概率流 ODE 来采样。
+\end{keybox}
+
+\subsection{三种常用的参数化}
+
+式~\eqref{eq:x0-from-eps} 说明 $\bx_0$、$\bx_t$、$\beps$ 三个量之间两两可以互推，
+所以网络输出哪一个目标都可以，差别在于不同噪声等级下的数值稳定性。常见三种：
+
+\begin{table}[htbp]
+  \centering
+  \caption{三种参数化方式及其换算关系}
+  \label{tab:param}
+  \small
+  \renewcommand{\arraystretch}{1.55}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}l l p{4.9cm} p{3.1cm}@{}}
+    \toprule
+    参数化 & 网络输出 & 反解 & 特点 \\
+    \midrule
+    $\beps$-参数化 & $\beps$
+      & $\bx_0=\dfrac{\bx_t-\sqrt{1-\abt}\,\beps}{\sqrt{\abt}}$
+      & 高噪声区间稳定，DDPM 默认 \\
+    $\bx_0$-参数化 & $\bx_0$
+      & $\beps=\dfrac{\bx_t-\sqrt{\abt}\,\bx_0}{\sqrt{1-\abt}}$
+      & 低噪声区间清晰，高噪声易发散 \\
+    $v$-参数化 & $\bm{v}=\sqrt{\abt}\,\beps-\sqrt{1-\abt}\,\bx_0$
+      & $\beps=\sqrt{\abt}\,\bm{v}+\sqrt{1-\abt}\,\bx_t$
+      & 全区间数值稳定，训练超参更宽容 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+三种参数化在数学上完全等价、可以逐点互相换算，但经验风险关于 $\theta$ 的\textbf{加权方式}不同：
+$\beps$-参数化对大 $t$（高噪声）的误差更敏感，$\bx_0$-参数化对小 $t$ 更敏感，
+$v$-参数化相当于两端折中，因此在 $T$ 很大或精度要求较高时常常更省事\cite{salimans2022progressive}。

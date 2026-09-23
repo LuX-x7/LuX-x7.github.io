@@ -1,0 +1,129 @@
+% =============================================================================
+%  refs.bib —— 参考文献
+%  用 biber 编译： latexmk -xelatex main.tex
+% =============================================================================
+
+% ---------- 教材与课件 ----------
+@book{qiu-nndl,
+  title     = {神经网络与深度学习},
+  author    = {邱锡鹏},
+  year      = {2020},
+  publisher = {机械工业出版社},
+  address   = {北京}
+}
+
+@misc{lee-ddpm,
+  title        = {机器学习课程讲义：Diffusion Model (DDPM)},
+  author       = {李宏毅},
+  year         = {2023},
+  howpublished = {课程投影片},
+  note         = {v7}
+}
+
+% ---------- 扩散模型的原始文献 ----------
+@inproceedings{sohl2015deep,
+  title     = {Deep Unsupervised Learning using Nonequilibrium Thermodynamics},
+  author    = {Sohl-Dickstein, Jascha and Weiss, Eric A. and Maheswaranathan, Niru and Ganguli, Surya},
+  booktitle = {Proceedings of the 32nd International Conference on Machine Learning (ICML)},
+  pages     = {2256--2265},
+  year      = {2015}
+}
+
+@misc{ho2020ddpm,
+  title         = {Denoising Diffusion Probabilistic Models},
+  author        = {Ho, Jonathan and Jain, Ajay and Abbeel, Pieter},
+  year          = {2020},
+  eprint        = {2006.11239},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG}
+}
+
+@misc{song2021ddim,
+  title         = {Denoising Diffusion Implicit Models},
+  author        = {Song, Jiaming and Meng, Chenlin and Ermon, Stefano},
+  year          = {2021},
+  eprint        = {2010.02502},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG}
+}
+
+@misc{song2021sde,
+  title         = {Score-Based Generative Modeling through Stochastic Differential Equations},
+  author        = {Song, Yang and Sohl-Dickstein, Jascha and Kingma, Diederik P. and Kumar, Abhishek
+                   and Ermon, Stefano and Poole, Ben},
+  year          = {2021},
+  eprint        = {2011.13456},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG}
+}
+
+@misc{nichol2021improved,
+  title         = {Improved Denoising Diffusion Probabilistic Models},
+  author        = {Nichol, Alexander Quinn and Dhariwal, Prafulla},
+  year          = {2021},
+  eprint        = {2102.09672},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG}
+}
+
+@inproceedings{vincent2011connection,
+  title     = {A Connection Between Score Matching and Denoising Autoencoders},
+  author    = {Vincent, Pascal},
+  journal   = {Neural Computation},
+  volume    = {23},
+  number    = {7},
+  pages     = {1661--1674},
+  year      = {2011},
+  publisher = {MIT Press}
+}
+
+@misc{salimans2022progressive,
+  title         = {Progressive Distillation for Fast Sampling of Diffusion Models},
+  author        = {Salimans, Tim and Ho, Jonathan},
+  year          = {2022},
+  eprint        = {2202.00512},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG}
+}
+
+@inproceedings{ho2022cfg,
+  title     = {Classifier-Free Diffusion Guidance},
+  author    = {Ho, Jonathan and Salimans, Tim},
+  booktitle = {NeurIPS 2021 Workshop on Deep Generative Models and Downstream Applications},
+  year      = {2022}
+}
+
+@inproceedings{rombach2022ldm,
+  title     = {High-Resolution Image Synthesis with Latent Diffusion Models},
+  author    = {Rombach, Robin and Blattmann, Andreas and Lorenz, Dominik and Esser, Patrick
+               and Ommer, Bj{\"o}rn},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages     = {10684--10695},
+  year      = {2022}
+}
+
+% ---------- 其他模态与应用 ----------
+@misc{chen2021wavegrad,
+  title         = {WaveGrad: Estimating Gradients for Waveform Generation},
+  author        = {Chen, Nanxin and Zhang, Yu and Zen, Heiga and Weiss, Ron J. and Norouzi, Mohammad
+                   and Chan, William},
+  year          = {2021},
+  eprint        = {2009.00713},
+  archivePrefix = {arXiv},
+  primaryClass  = {eess.AS}
+}
+
+@inproceedings{holtzman2020curious,
+  title     = {The Curious Case of Neural Text Degeneration},
+  author    = {Holtzman, Ari and Buys, Jan and Du, Li and Forbes, Maxwell and Choi, Yejin},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2020}
+}
+
+@inproceedings{ghazvininejad2019mask,
+  title     = {Mask-Predict: Parallel Decoding of Conditional Masked Language Models},
+  author    = {Ghazvininejad, Marjan and Levy, Omer and Liu, Yinhan and Zettlemoyer, Luke},
+  booktitle = {Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing (EMNLP)},
+  pages     = {6112--6121},
+  year      = {2019}
+}

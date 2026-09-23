@@ -1,0 +1,67 @@
+% =============================================================================
+%  扩散模型基础 —— 学习笔记 / 讲解稿模版
+%
+%  编译方式（本机 TeX Live 2026）：
+%      latexmk -xelatex main.tex          % 一步到位（推荐）
+%      make                               % 等价写法
+%      xelatex main && biber main && xelatex main && xelatex main
+%
+%  结构：
+%      preamble.tex      全局样式（改外观只动这个文件）
+%      sections/*.tex    各章正文，按需增删
+%      refs.bib          参考文献
+%      figures/          外部图片放这里
+% =============================================================================
+\documentclass[12pt, a4paper]{ctexart}
+
+\input{preamble}
+
+
+% -----------------------------------------------------------------------------
+%  标题区（想改成 \maketitle 也行，这里手写是为了完全控制行距与字号）
+% -----------------------------------------------------------------------------
+\newcommand{\doctitle}{扩散模型基础}
+\newcommand{\docsubtitle}{从加噪到生成：DDPM 的直观理解、下界推导与采样}
+\newcommand{\docdate}{2026 年 9 月}
+\newcommand{\docnote}{%
+  本文是扩散模型的学习笔记与讲解稿模版。章节的组织方式参考了邱锡鹏老师
+  《神经网络与深度学习》的写法——概念先行、直觉在前、公式在后；
+  讲解的脉络则参考了李宏毅（Hung-yi Lee）老师的 \emph{DDPM} 系列课件，
+  尤其是“\emph{VAE 与扩散模型的对照}”和“\emph{训练时想像中与实际上}”两处。
+  文中附上了笔者自己的推导与理解，如有错误或问题，欢迎指正与交流！%
+}
+
+\begin{document}
+
+\begin{center}
+  {\sffamily\bfseries\zihao{2} \doctitle}\\[0.85em]
+  {\sffamily\zihao{5} \docsubtitle}\\[0.55em]
+  {\sffamily\zihao{5} \docdate}
+\end{center}
+
+\vspace{0.4em}
+\docnote
+
+\vspace{0.6em}
+\hrule
+\vspace{0.6em}
+
+% 想要目录就把下面三行的注释去掉
+% \tableofcontents
+% \newpage
+% \vspace{1em}
+
+\input{sections/01-basic}
+\input{sections/02-forward}
+\input{sections/03-lowerbound}
+\input{sections/04-reverse}
+\input{sections/05-train-sample}
+\input{sections/06-extension}
+\input{sections/07-summary}
+
+\appendix
+\input{sections/90-appendix}
+
+\printbibliography[title={参考文献}]
+
+\end{document}

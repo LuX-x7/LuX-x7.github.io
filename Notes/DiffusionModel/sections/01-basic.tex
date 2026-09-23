@@ -1,0 +1,162 @@
+\section{生成模型与扩散模型的基本概念}
+
+\subsection{生成模型要解决什么问题}
+
+在监督学习里，我们关心的是从输入到输出的映射：给定样本 $(\bx,y)$，学一个函数 $f$，
+让它在新样本上预测得准。这是\emph{判别}的思路，模型刻画的是条件分布 $p(y\mid\bx)$。
+生成模型问的是另一个问题：\emph{数据本身}服从什么分布？
+
+记真实数据分布为 $p_{\text{data}}(\bx)$。手头只有从它当中独立抽取的 $N$ 个样本
+$\{\bx^{(n)}\}_{n=1}^{N}$（一堆图片、一段语音、一句文本），而 $p_{\text{data}}$ 的具体
+形式是未知的。我们希望学到一个模型 $p_\theta(\bx)$，使得\emph{从 $p_\theta$ 采样出来的东西
+与训练集里的东西无法区分}。按最大似然估计，
+\begin{equation}
+  \begin{aligned}
+    \theta^\star
+    &= \argmax_\theta \prod_{n=1}^{N} p_\theta\bigl(\bx^{(n)}\bigr)
+     = \argmax_\theta \sum_{n=1}^{N} \log p_\theta\bigl(\bx^{(n)}\bigr) \\
+    &\approx \argmax_\theta\ \E_{\bx\sim p_{\text{data}}}\bigl[\log p_\theta(\bx)\bigr].
+  \end{aligned}
+  \label{eq:mle}
+\end{equation}
+把期望写成积分，再减掉一个与 $\theta$ 无关的常数项：
+\begin{equation}
+  \begin{aligned}
+    &\argmax_\theta\ \E_{p_{\text{data}}}\bigl[\log p_\theta(\bx)\bigr]
+     = \argmax_\theta \int_{\bx} p_{\text{data}}(\bx)\log p_\theta(\bx)\,\mathrm{d}\bx \\
+    &\quad -\underbrace{\int_{\bx} p_{\text{data}}(\bx)\log p_{\text{data}}(\bx)\,\mathrm{d}\bx}_{\text{常数}} \\
+    &\quad = \argmin_\theta \int_{\bx} p_{\text{data}}(\bx)
+       \log\frac{p_{\text{data}}(\bx)}{p_\theta(\bx)}\,\mathrm{d}\bx \\
+    &\quad = \argmin_\theta \Dkl\bigl(p_{\text{data}}\,\|\,p_\theta\bigr).
+  \end{aligned}
+  \label{eq:mle-kl}
+\end{equation}
+也就是说，\emph{最大似然等价于最小化真实分布与模型分布之间的 KL 散度}\cite{lee-ddpm}。
+这条结论把“训好一个生成模型”还原成了一个统计问题，也是后面所有推导的出发点。
+
+问题在于 $p_\theta(\bx)$ 本身通常算不出来：它往往是某个隐变量积分掉之后的结果，积分不可解。
+所有生成模型的差别，就落在“如何绕开这个积分”上。一个统一的写法是：先取一个简单、易采样的
+先验分布 $\bz\sim p(\bz)$（通常取标准高斯），再用一个网络 $G_\theta$ 把它变换成数据
+\begin{equation}
+  \bz \sim \Ncal(\bzero,\bI), \qquad \bx = G_\theta(\bz),
+  \label{eq:gen-general}
+\end{equation}
+差别只在 $G_\theta$ 的结构与训练目标。表~\ref{tab:gen-compare} 给出了几条主要路线的对比。
+
+\begin{table}[htbp]
+  \centering
+  \caption{几类主流生成模型的对比}
+  \label{tab:gen-compare}
+  \small
+  \renewcommand{\arraystretch}{1.35}
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}l p{3.0cm} l l p{3.1cm}@{}}
+    \toprule
+    模型 & 生成方式 & 似然 & 训练 & 特点 \\
+    \midrule
+    GAN        & 一步映射 $G_\theta(\bz)$            & 不可计算 & 对抗博弈，易不稳定 & 快，但易模式塌缩 \\
+    VAE        & 一步映射 $+$ 隐变量                 & 下界     & 稳定               & 快，但结果偏模糊 \\
+    流模型     & 可逆映射，$\bz\leftrightarrow\bx$   & 精确     & 稳定               & 快，但受维数与可逆性约束 \\
+    扩散模型   & 从噪声出发\emph{迭代去噪} $T$ 次     & 下界     & 稳定               & 慢，但质量高、多样性强 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{扩散模型的两个过程}
+
+扩散模型的做法是把式~\eqref{eq:gen-general} 中“一步到位”的映射拆成许多步\cite{sohl2015deep,ho2020ddpm}，
+它包含一正一反两个过程（图~\ref{fig:two-process}）：
+
+\begin{itemize}
+  \item \textbf{前向过程（加噪）}：预先设定、\emph{无参数}。从干净数据 $\bx_0$ 出发，
+        每一步叠加上一小撮高斯噪声，共走 $T$ 步，最终 $\bx_T$ 几乎变成纯噪声，
+        分布收敛到 $\Ncal(\bzero,\bI)$；
+  \item \textbf{反向过程（去噪）}：\emph{需要学习}。从 $\bx_T\sim\Ncal(\bzero,\bI)$ 出发，
+        每一步让网络预测“这一步大概被加进了什么噪声”并把它减掉，逐步还原出 $\bx_0$。
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[x=1cm, y=1cm]
+    % 一排方块：颜色由浅到深，表示噪声逐步吞掉信号
+    \foreach \k/\sh in {0/6, 1/20, 3/40, 4/55, 6/80}{%
+      \node[draw=dmNavy, line width=0.7pt, rounded corners=2pt,
+            minimum size=0.92cm, inner sep=0pt,
+            fill=dmNavy!\sh!white] (s\k) at (1.45*\k, 0) {};
+    }
+    \node[dlab] at (1.45*2, 0) {$\cdots$};
+    \node[dlab] at (1.45*5, 0) {$\cdots$};
+    % 节点下方的记号
+    \node[dlab, below=1pt of s0] {$\bx_0$};
+    \node[dlab, below=1pt of s1] {$\bx_1$};
+    \node[dlab, below=1pt of s3] {$\bx_{t-1}$};
+    \node[dlab, below=1pt of s4] {$\bx_t$};
+    \node[dlab, below=1pt of s6] {$\bx_T$};
+    \node[dlab, below=1pt of s0, yshift=-0.34cm] {干净数据};
+    \node[dlab, below=1pt of s6, yshift=-0.34cm] {纯噪声};
+    % 上：前向
+    \draw[darr] (-0.46, 1.05) -- (9.16, 1.05);
+    \node[dlab, fill=white, inner sep=3pt] at (4.35, 1.05)
+      {$q(\bx_t\mid\bx_{t-1})$：逐步加噪（前向过程，无参数）};
+    % 下：反向
+    \draw[darr] (9.16, -1.25) -- (-0.46, -1.25);
+    \node[dlab, fill=white, inner sep=3pt] at (4.35, -1.25)
+      {$p_\theta(\bx_{t-1}\mid\bx_t)$：逐步去噪（反向过程，需要学习）};
+  \end{tikzpicture}
+  \caption{扩散模型的前向过程与反向过程。方块由浅到深表示噪声逐渐增大}
+  \label{fig:two-process}
+\end{figure}
+
+值得强调的是：前向过程每一步都在丢失信息，它是一个\emph{不可逆}的物理过程，就像一滴墨水滴进清水后
+逐渐扩散均匀、熵在增加。我们并不去求它的数学逆，而是让网络学一个\emph{统计意义}上的逆——
+给定当前含噪样本，估计这一步被加入的噪声，然后减掉它。这也正是 DDPM 全名的由来：
+Denoising Diffusion Probabilistic Models，\emph{去噪扩散概率模型}\cite{ho2020ddpm}。
+
+换一个角度，扩散模型是一种\emph{自回归}式的生成：把“一次到位”改成“$N$ 次到位”\cite{lee-ddpm}。
+GAN 与 VAE 一步就把 $\bz$ 变成 $\bx$，扩散模型则用 $T$ 次微小的、\emph{几乎确定}的去噪步骤
+完成同一件事。代价是采样变慢（需要 $T$ 次网络前向），换来的是训练的稳定与生成质量的提升。
+
+值得注意的是，这里的“去噪”每一步都只处理一点点噪声，于是每一步的子任务都极其简单，
+用一个小网络就能拟合得很好；把 $T$ 步串起来，整体就成了一个表达能力极强的生成器。
+这与“把难题拆成一串简单题”的通用思路是一致的。
+
+\subsection{记号约定}
+
+后面会反复出现下列记号，先集中列在这里，读时可随时回查。
+
+\begin{itemize}
+  \item $\bx_0\in\mathbb{R}^d$：干净数据（$\bx_0\sim p_{\text{data}}$）；
+  \item $\bx_1,\dots,\bx_T\in\mathbb{R}^d$：逐步含噪的隐变量，\emph{与数据同维}（这一点与 VAE 不同）；
+  \item $T$：扩散步数，常见 200～1000；
+  \item $\beta_t\in(0,1)$：第 $t$ 步的噪声方差；$\{\beta_1,\dots,\beta_T\}$ 称为\emph{噪声调度}（noise schedule）；
+  \item $\alpha_t \coloneqq 1-\beta_t$，$\abt\coloneqq\prod_{s=1}^{t}\alpha_s$（注意是\emph{累乘}）；
+  \item $\beps\sim\Ncal(\bzero,\bI)$：标准高斯噪声；
+  \item $\theta$：网络参数；$\beps_\theta(\bx_t,t)$ 表示噪声预测网络的输出。
+\end{itemize}
+
+表~\ref{tab:four-gaussians} 是本笔记的一个“地图”：扩散模型里出现的所有分布都是高斯，
+整篇推导其实就是在算它们的均值与方差。
+
+\begin{table}[htbp]
+  \centering
+  \caption{四个核心分布：全部都是高斯}
+  \label{tab:four-gaussians}
+  \small
+  \renewcommand{\arraystretch}{1.9}
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}p{4.4cm} p{5.4cm} p{3.0cm}@{}}
+    \toprule
+    分布 & 均值 & 方差 \\
+    \midrule
+    前向单步 $q(\bx_t\mid\bx_{t-1})$
+      & $\sqrt{\alpha_t}\,\bx_{t-1}$ & $\beta_t\bI$ \\
+    前向闭式 $q(\bx_t\mid\bx_0)$
+      & $\sqrt{\abt}\,\bx_0$ & $(1-\abt)\bI$ \\
+    真实后验 $q(\bx_{t-1}\mid\bx_t,\bx_0)$
+      & $\dfrac{\sqrt{\bar\alpha_{t-1}}\,\beta_t\,\bx_0+\sqrt{\alpha_t}\,(1-\bar\alpha_{t-1})\,\bx_t}{1-\abt}$
+      & $\dfrac{1-\bar\alpha_{t-1}}{1-\abt}\,\beta_t\bI$ \\
+    反向过程 $p_\theta(\bx_{t-1}\mid\bx_t)$
+      & $\bmu_\theta(\bx_t,t)$（网络给出） & $\sigma_t^2\bI$（可取 $\beta_t$ 或 $\tilde\beta_t$） \\
+    \bottomrule
+  \end{tabular}
+\end{table}

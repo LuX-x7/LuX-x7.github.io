@@ -1,0 +1,21 @@
+# LaTeX 中间文件
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+*.fls
+*.fdb_latexmk
+*.xdv
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
+
+# macOS
+.DS_Store
+
+# 说明：main.pdf 是交付物，默认纳入版本管理

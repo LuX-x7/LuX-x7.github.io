@@ -1,0 +1,294 @@
+% =============================================================================
+%  preamble.tex —— 全局样式
+%  这里集中放宏包、字体、版式、定理环境、TikZ 样式、代码样式。
+%  正文请写在各 sections/*.tex 里；改外观只改这个文件即可。
+%  编译： latexmk -xelatex main.tex   （见 Makefile / build.sh）
+% =============================================================================
+
+
+% -----------------------------------------------------------------------------
+% 1. 页面与行距
+% -----------------------------------------------------------------------------
+\usepackage{geometry}
+\geometry{
+  a4paper,
+  left   = 3.2cm, right  = 3.2cm,
+  top    = 3.0cm, bottom = 2.8cm,
+  headsep = 0.6cm, footskip = 1.0cm
+}
+\usepackage{setspace}
+\setstretch{1.42}          % 中文行距：1.4～1.5 之间比较舒服，可按需调
+
+% 中文段落断行：给 TeX 留一点额外弹性，减少长公式/长词造成的 overfull
+\setlength{\emergencystretch}{2.5em}
+\tolerance         = 2000
+\hbadness          = 10000   % 只关心 overfull，忽略轻微的 underfull
+\vbadness          = 10000
+
+
+% -----------------------------------------------------------------------------
+% 2. 字体（XeLaTeX + fontspec）
+%    西文用 Latin Modern，与默认的 Computer Modern 数学字体完全统一；
+%    中文正文宋体、标题/图表题黑体，与参考笔记的观感一致。
+%    若想换成 Times，把 \setmainfont 换成 Times New Roman 即可。
+% -----------------------------------------------------------------------------
+\usepackage{fontspec}
+% 西文衬线族（正文）
+\setmainfont{lmroman10-regular.otf}[
+  BoldFont       = lmroman10-bold.otf,
+  ItalicFont     = lmroman10-italic.otf,
+  BoldItalicFont = lmroman10-bolditalic.otf,
+  Ligatures      = TeX
+]
+% 西文无衬线族（标题、图表题）
+\setsansfont{Helvetica Neue}
+% 西文等宽族（代码）
+\setmonofont{Menlo}[Scale=0.92]
+
+% 中文字体
+% 注：ctex 已经定义了 \songti \heiti \kaishu \fangsong 等切换命令，
+%     这里只需要把四套字体族指向 macOS 上对应的字体即可。
+%     Heiti SC 带有真正的 Bold 字面，标题不会出现缺字警告。
+\setCJKmainfont{Songti SC}[ItalicFont=STFangsong]   % 宋体；强调用仿宋
+\setCJKsansfont{Heiti SC}                          % 黑体（标题）
+\setCJKmonofont{STFangsong}                        % 仿宋（等宽场景）
+
+
+% -----------------------------------------------------------------------------
+% 3. 数学
+% -----------------------------------------------------------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{bm}
+\allowdisplaybreaks
+
+% 常用的数学记号（避免正文里反复写长命令）
+\providecommand{\E}{\mathbb{E}}                        % 期望
+\newcommand{\Ncal}{\mathcal{N}}                        % 高斯分布
+\newcommand{\Dkl}{\mathrm{D}_{\mathrm{KL}}}            % KL 散度
+\newcommand{\bx}{\bm{x}}
+\newcommand{\bz}{\bm{z}}
+\newcommand{\beps}{\bm{\varepsilon}}
+\newcommand{\bI}{\bm{I}}
+\newcommand{\bzero}{\bm{0}}
+\newcommand{\bmu}{\bm{\mu}}
+\newcommand{\abt}{\bar{\alpha}_t}                      % \bar\alpha_t
+\newcommand{\abs}{\bar{\alpha}_s}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+
+% -----------------------------------------------------------------------------
+% 4. 颜色（先定义，后面 TikZ / 表格 / 代码都要用）
+% -----------------------------------------------------------------------------
+\usepackage{xcolor}
+\definecolor{dmNavy} {HTML}{2B2D5C}   % 深藏青：主线条、标题
+\definecolor{dmSteel}{HTML}{3C6E9F}   % 钢蓝：强调、链接
+\definecolor{dmLav}  {HTML}{DFDBF4}   % 淡紫：节点底色（对齐参考笔记）
+\definecolor{dmSky}  {HTML}{D6E4F7}   % 淡蓝
+\definecolor{dmMint} {HTML}{D6EDE7}   % 淡青
+\definecolor{dmRose} {HTML}{F7DFDF}   % 淡粉
+\definecolor{dmGray} {HTML}{6B6F8A}   % 中性灰
+
+
+% -----------------------------------------------------------------------------
+% 5. 版式细节：标题居中、页码在右上角、图表题样式
+% -----------------------------------------------------------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[R]{\small\thepage}
+
+% 章节标题：一级居中加粗黑体，二级左对齐
+\ctexset{
+  section = {
+    format     = \sffamily\bfseries\zihao{3}\centering,
+    aftername  = \quad,
+    beforeskip = 2.0ex plus .3ex minus .2ex,
+    afterskip  = 1.4ex plus .2ex,
+  },
+  subsection = {
+    format     = \sffamily\bfseries\zihao{4},
+    aftername  = \quad,
+    beforeskip = 2.0ex plus .3ex minus .2ex,
+    afterskip  = 1.0ex plus .2ex,
+  },
+  subsubsection = {
+    format     = \sffamily\bfseries\zihao{5},
+    aftername  = \quad,
+    beforeskip = 1.6ex plus .3ex minus .2ex,
+    afterskip  = 0.8ex plus .2ex,
+  },
+}
+
+% 浮动体、图表题
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{caption}
+\captionsetup{
+  font            = {sf, bf, small},
+  labelsep        = colon,
+  justification   = centering,
+  singlelinecheck = true,
+  skip            = 6pt,
+}
+\captionsetup[table]{position=top}
+\newcommand{\tabref}[1]{表~\ref{#1}}
+\newcommand{\figref}[1]{图~\ref{#1}}
+
+% 列表间距
+\usepackage{enumitem}
+\setlist[itemize]{itemsep=0.25ex plus .1ex, topsep=0.6ex plus .2ex, parsep=0pt}
+\setlist[enumerate]{itemsep=0.25ex plus .1ex, topsep=0.6ex plus .2ex, parsep=0pt}
+
+
+% -----------------------------------------------------------------------------
+% 6. 定理类环境（正文一律正体，中文不用斜体）
+% -----------------------------------------------------------------------------
+\usepackage{amsthm}
+\newtheoremstyle{cn}
+  {1.3ex plus .2ex}% 上方间距
+  {1.3ex plus .2ex}% 下方间距
+  {\normalfont}%    正文字体：正体
+  {}%              缩进
+  {\sffamily\bfseries}% 头部字体
+  {}%              头部标点
+  {0.7em}%         头部后间距
+  {}%              头部规格
+\theoremstyle{cn}
+\newtheorem{definition} {定义}[section]
+\newtheorem{proposition}[definition]{命题}
+\newtheorem{theorem}    [definition]{定理}
+\newtheorem{corollary}  [definition]{推论}
+\newtheorem{example}    [definition]{例}
+\newtheorem{remark}     [definition]{注}
+
+% 自带的“证明”环境（比 amsthm 的 proof 更适合中文排版）
+\newenvironment{pf}[1][证明]{%
+  \par\vspace{0.3ex}%
+  \noindent{\sffamily\bfseries #1}\quad\ignorespaces
+}{%
+  \unskip\nobreak\hfill$\square$\par\vspace{1.0ex}%
+}
+
+
+% -----------------------------------------------------------------------------
+% 7. TikZ / pgfplots
+% -----------------------------------------------------------------------------
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{
+  arrows.meta, positioning, calc, fit, backgrounds,
+  shapes.geometric, shapes.misc, decorations.pathreplacing
+}
+
+\tikzset{
+  % 通用节点：圆角、描边 + 淡紫底（和参考笔记的示意图风格一致）
+  dbox/.style  = {draw=dmNavy, line width=0.7pt, fill=dmLav,
+                  rounded corners=3pt, inner sep=4pt, minimum height=2.0em,
+                  font=\small\sffamily, text=dmNavy, align=center},
+  dbox2/.style = {dbox, fill=dmSky},
+  dbox3/.style = {dbox, fill=dmMint},
+  dbox4/.style = {dbox, fill=dmRose},
+  % 打通的箭头
+  darr/.style  = {-{Latex[length=2.1mm, width=1.5mm]}, draw=dmNavy, line width=0.7pt},
+  dbarr/.style = {{Latex[length=2.1mm, width=1.5mm]}-{Latex[length=2.1mm, width=1.5mm]},
+                  draw=dmNavy, line width=0.7pt},
+  % 注释文字
+  dlab/.style  = {font=\footnotesize\sffamily, text=dmNavy, inner sep=2pt},
+  dnum/.style  = {font=\small\itshape, text=dmNavy},
+}
+
+
+% -----------------------------------------------------------------------------
+% 8. 算法
+% -----------------------------------------------------------------------------
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\floatname{algorithm}{算法}
+\renewcommand{\algorithmicrequire}{\textbf{输入：}}
+\renewcommand{\algorithmicensure}{\textbf{输出：}}
+\renewcommand{\algorithmicforall}{\textbf{对}}
+\renewcommand{\algorithmicdo}{\textbf{do}}
+\renewcommand{\algorithmicend}{\textbf{end}}
+% 让算法环境的说明文字也有统一的字号
+\makeatletter
+\renewcommand{\ALG@beginalgorithmic}{\small}
+\makeatother
+
+
+% -----------------------------------------------------------------------------
+% 9. 强调框 / 代码
+% -----------------------------------------------------------------------------
+\usepackage[most]{tcolorbox}
+\newtcolorbox{keybox}[1][要点]{
+  enhanced, breakable,
+  colback  = dmLav!30, colframe = dmNavy,
+  boxrule  = 0.7pt, arc = 3pt,
+  left = 7pt, right = 7pt, top = 6pt, bottom = 6pt,
+  fonttitle = \sffamily\bfseries,
+  coltitle  = dmNavy, colbacktitle = dmLav!70,
+  title = {#1},
+  attach boxed title to top left = {xshift=8pt, yshift=-2pt},
+  boxed title style = {boxrule=0pt, arc=2pt},
+  top = 12pt,
+}
+
+\usepackage{listings}
+\lstdefinestyle{pystyle}{
+  language        = Python,
+  basicstyle      = \ttfamily\footnotesize,
+  keywordstyle    = \color{dmSteel}\bfseries,
+  commentstyle    = \color{dmGray}\itshape,
+  stringstyle     = \color{dmNavy},
+  numbers         = left,
+  numberstyle     = \tiny\color{dmGray},
+  numbersep       = 8pt,
+  frame           = single,
+  rulecolor       = \color{dmGray!45},
+  backgroundcolor = \color{dmGray!6},
+  breaklines      = true,
+  showstringspaces= false,
+  tabsize         = 4,
+  xleftmargin     = 1.6em,
+  framexleftmargin= 1.6em,
+  columns         = fullflexible,
+  keepspaces      = true,
+  upquote         = true,
+}
+\lstset{style=pystyle}
+
+
+% -----------------------------------------------------------------------------
+% 10. 超链接与参考文献
+%     （hyperref 要放在最后；biblatex 放在 hyperref 之后）
+% -----------------------------------------------------------------------------
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks  = true,
+  linkcolor   = dmNavy,
+  citecolor   = dmSteel,
+  urlcolor    = dmSteel,
+  bookmarksnumbered = true,
+  pdftitle    = {扩散模型基础},
+  pdfsubject  = {Diffusion Models, DDPM, 变分推断},
+}
+
+\usepackage[
+  backend  = biber,
+  style    = numeric-comp,
+  sortcites= true,
+  giveninits = true,
+  maxbibnames = 6,
+  doi = false, isbn = false,
+  url = true
+]{biblatex}
+\addbibresource{refs.bib}
+\setlength{\bibitemsep}{0.4ex}

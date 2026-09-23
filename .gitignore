@@ -40,4 +40,7 @@ yarn-error.log*
 /work/
 /.npm-cache/
 /.dev-server.log
+
+# workspace metadata (agent session data — not part of the site)
+.workbuddy/
 /.dev-server.err.log

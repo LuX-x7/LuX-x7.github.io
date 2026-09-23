@@ -1,0 +1,80 @@
+\section{延伸与应用}
+
+\subsection{连续化的视角：随机微分方程}
+
+把 $T$ 取得很大、把 $\beta_t$ 取得很小的极限下，前向过程就是一个\emph{随机微分方程}（SDE）
+\begin{equation}
+  \mathrm{d}\bx = -\tfrac{1}{2}\beta(t)\,\bx\,\mathrm{d}t+\sqrt{\beta(t)}\,\mathrm{d}\bm{w},
+  \label{eq:forward-sde}
+\end{equation}
+其中 $\bm{w}$ 是标准布朗运动。它的反向时间 SDE 为
+\begin{equation}
+  \mathrm{d}\bx=\Bigl[-\tfrac{1}{2}\beta(t)\,\bx-\beta(t)\,\nabla_{\bx}\log q_t(\bx)\Bigr]\mathrm{d}t
+  +\sqrt{\beta(t)}\,\mathrm{d}\bar{\bm{w}},
+  \label{eq:reverse-sde}
+\end{equation}
+即只需要知道每个时刻的得分函数 $\nabla_{\bx}\log q_t(\bx)$；而由上一节的结论，
+得分恰好由噪声预测网络给出。Song 等人指出，同一族前向 SDE 都对应一个\emph{概率流 ODE}
+\begin{equation}
+  \mathrm{d}\bx=\Bigl[-\tfrac{1}{2}\beta(t)\,\bx-\tfrac{1}{2}\beta(t)\,\nabla_{\bx}\log q_t(\bx)\Bigr]\mathrm{d}t,
+  \label{eq:pf-ode}
+\end{equation}
+沿着它积分能得到完全确定性的采样轨迹，且与 SDE 采样共享同一组边缘分布\cite{song2021sde}。
+这从理论上解释了 DDIM 的确定性采样与跳步能力：它正是概率流 ODE 的一种数值离散。
+
+\subsection{语音与文本}
+
+扩散模型最初在图像上取得突破，随后被搬到其他模态，而不同模态的难点恰好揭示了它的边界。
+
+\textbf{语音}几乎没有障碍，因为语音波形本身是连续的高维实值信号，
+与图像的设定同构。WaveGrad、DiffWave 等模型把扩散用于声码器与声学模型，
+用几十步采样即可合成高质量语音\cite{chen2021wavegrad}。
+
+\textbf{文本}则要麻烦得多，原因是文本是\emph{离散}的：
+标准高斯噪声无法与 token 的 one-hot 表示直接相加，而前向过程一旦不再可加高斯，
+闭式解与整套推导都会失效。实践中形成了三条路：
+
+\begin{itemize}
+  \item \textbf{在隐空间上加噪}：先用一个连续的自编码器把文本（或图像）压到连续的隐空间，
+        再在隐空间上做标准扩散。Latent Diffusion 在图像上非常成功，
+        DiffuSeq 等把这一思路搬到文本，可同时生成一对相关的句子\cite{rombach2022ldm}；
+  \item \textbf{换掉高斯噪声}：不用高斯噪声，而用“编辑”（插入、删除、替换）这类\emph{离散}的
+        扰动来定义前向过程，DiffusER 是这一路线的代表；
+  \item \textbf{用掩码代替加噪}：把“加噪—去噪”换成“加掩码—预测”，
+        即 Mask-Predict 一类的非自回归生成方法，可以并行地一次填空若干位置\cite{ghazvininejad2019mask}。
+\end{itemize}
+
+\begin{remark}[一个统一的理解]
+如果把“扩散”理解为\emph{把一次生成拆成若干次微小的、逐步确定化的生成}，
+那么这些变体其实是同一件事在不同数据模态上的实现：
+连续数据用高斯噪声，离散数据用掩码或编辑操作，
+维度太高（例如高分辨率图像）就先压到隐空间再扩散。
+\end{remark}
+
+\subsection{条件生成与工程实践}
+
+要控制生成结果（“一只在奔跑的狗”），只需把条件 $\bm{c}$ 交给网络：
+$\beps_\theta(\bx_t,t)\to\beps_\theta(\bx_t,t,\bm{c})$，训练时把 $\bm{c}$（文本嵌入、类别标签）
+与时间步 $t$ 一起注入。更细的控制则通过\emph{引导}（guidance）实现：
+
+\begin{itemize}
+  \item \textbf{分类器引导}（classifier guidance）：额外训一个分类器 $p_\phi(\bm{c}\mid\bx_t)$，
+        在采样时把它的梯度加到均值上，$\tilde{\bmu}=\bmu_\theta+\sigma_t^2\nabla_{\bx_t}\log p_\phi(\bm{c}\mid\bx_t)$；
+  \item \textbf{无分类器引导}（classifier-free guidance）：不训分类器，
+        而是同时训练“有条件”与“无条件”两种预测，采样时做外推
+        $\tilde{\beps}=(1+w)\,\beps_\theta(\bx_t,t,\bm{c})-w\,\beps_\theta(\bx_t,t,\varnothing)$，
+        $w$ 越大越贴合条件、但多样性越低\cite{ho2022cfg}。
+\end{itemize}
+
+最后是工程上最常被提到的三个议题：
+
+\begin{itemize}
+  \item \textbf{采样太慢}：$T$ 次网络前向是主要成本。加速思路有三类——
+        改采样器（DDIM、DPM-Solver 等把步数压到几十步甚至十几步）、
+        蒸馏（Progressive Distillation、一致性模型，把多步压成 1～4 步）、
+        在隐空间扩散（把每次前向的分辨率降下来）；
+  \item \textbf{损失加权}：式~\eqref{eq:Lt-weighted} 中的 $w_t$ 丢掉之后虽然效果好，
+        但“如何加权”本身是一个可以调的设计空间，$\beps$/$v$ 参数化与 Min-SNR 加权都属于这一类；
+  \item \textbf{训练数据与算力}：扩散模型的训练是稳定的（没有 GAN 那样的对抗失衡），
+        代价转移到数据规模与采样时间上，这也是它在这几年迅速工业化的原因之一。
+\end{itemize}

@@ -1,0 +1,55 @@
+\section{小结}
+
+把整篇内容压成一条线，扩散模型的逻辑其实非常顺：
+
+\begin{enumerate}
+  \item \textbf{目标}：生成模型想学 $p_{\text{data}}(\bx)$，最大似然等价于最小化
+        $\Dkl(p_{\text{data}}\|p_\theta)$，但 $p_\theta(\bx)$ 里的积分算不出来；
+  \item \textbf{方案}：把“一步生成”改成“$T$ 步微小的去噪”。用一条\emph{固定、无参数}的前向链
+        把数据逐步溶成噪声（相当于 VAE 的编码器），再学一条反向链把它还原（解码器）；
+  \item \textbf{前向闭式解}：$q(\bx_t\mid\bx_0)=\Ncal(\sqrt{\abt}\bx_0,(1-\abt)\bI)$
+        让 $\bx_t$ 可以\emph{一步}造出来，训练代价与 $T$ 无关；
+  \item \textbf{下界}：由 Jensen 不等式得 ELBO，展开成 $L_T+\sum_{t\ge2}L_{t-1}+L_0$。
+        其中 $L_T$ 是常数，$L_{t-1}$ 是主项，而真实后验
+        $q(\bx_{t-1}\mid\bx_t,\bx_0)$ 有闭式解；
+  \item \textbf{化简}：两个方差相同的正态分布之间的 KL 退化成均值平方误差，
+        再把均值换成“预测噪声”的写法，就得到
+        $\mathcal{L}_{\text{simple}}=\E\|\beps-\beps_\theta(\bx_t,t)\|^2$；
+  \item \textbf{采样}：从 $\Ncal(\bzero,\bI)$ 出发反向走 $T$ 步，每步减掉预测的噪声、
+        再按 $\sigma_t$ 补一点新噪声。$\sigma_t$ 控制随机性；
+        $\sigma_t\to0$ 得到确定性采样，DDIM 由此把步数压到几十步；
+  \item \textbf{联系}：预测噪声等价于估计得分函数，于是扩散模型可以写成反向时间 SDE 与概率流 ODE，
+        也解释了它与 VAE、得分匹配之间的关系。
+\end{enumerate}
+
+\begin{keybox}[一句话]
+\textbf{扩散模型 = 用一条固定的加噪链，把一个不可解的积分问题，
+换成了一个可以解析写出下界的、逐层的去噪回归问题。}
+它的所有“魔法”都来自前向过程的闭式解 $q(\bx_t\mid\bx_0)$：
+正因为 $\bx_t$ 可以一步造出来，训练才会既简单又便宜；
+也正因为真实后验可以解析写出，变分下界才能化简成“看图猜噪声”。
+\end{keybox}
+
+表~\ref{tab:cheatsheet} 是几个核心公式的速查表，动手实现时可以据此逐行对照。
+
+\begin{table}[htbp]
+  \centering
+  \caption{核心公式速查}
+  \label{tab:cheatsheet}
+  \small
+  \renewcommand{\arraystretch}{1.85}
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}p{3.3cm} p{10.2cm}@{}}
+    \toprule
+    环节 & 公式 \\
+    \midrule
+    前向单步     & $\bx_t=\sqrt{\alpha_t}\,\bx_{t-1}+\sqrt{\beta_t}\,\beps$ \\
+    前向闭式     & $\bx_t=\sqrt{\abt}\,\bx_0+\sqrt{1-\abt}\,\beps$ \\
+    后验均值     & $\tilde{\bmu}_t=\dfrac{\sqrt{\bar\alpha_{t-1}}\,\beta_t\,\bx_0+\sqrt{\alpha_t}\,(1-\bar\alpha_{t-1})\,\bx_t}{1-\abt}$ \\
+    训练目标     & $\mathcal{L}_{\text{simple}}=\E\bigl\|\beps-\beps_\theta(\bx_t,t)\bigr\|^2$ \\
+    采样单步     & $\bx_{t-1}=\dfrac{1}{\sqrt{\alpha_t}}\Bigl(\bx_t-\dfrac{\beta_t}{\sqrt{1-\abt}}\,\beps_\theta(\bx_t,t)\Bigr)+\sigma_t\bz$ \\
+    从噪声还原数据 & $\hat{\bx}_0=\dfrac{\bx_t-\sqrt{1-\abt}\,\beps_\theta(\bx_t,t)}{\sqrt{\abt}}$ \\
+    噪声与得分   & $\nabla_{\bx_t}\log q(\bx_t)=-\,\dfrac{\beps_\theta(\bx_t,t)}{\sqrt{1-\abt}}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
