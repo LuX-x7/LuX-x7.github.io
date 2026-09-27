@@ -15,13 +15,6 @@ const writingEntries = [
     href: "/pdfs/DiffusionM.pdf"
   },
   {
-    date: "2026.08.18",
-    title: "Fundamentals of Linear Algebra",
-    description: "Notes on vectors, linear combinations, and the basic language of linear algebra.",
-    format: "PDF",
-    href: "/pdfs/LAF.pdf"
-  },
-  {
     date: "2026.08.13",
     title: "Fundamentals of Machine Learning",
     description: "Notes introducing foundational concepts in machine learning.",
