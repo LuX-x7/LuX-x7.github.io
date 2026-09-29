@@ -26,5 +26,8 @@
 # AI 助手的工作目录（不属于笔记内容，且可能含本地上下文）
 .workbuddy/
 
+# 拆分式的 DiffusionModel 工程目录：只保留本地，不随仓库同步
+DiffusionModel/
+
 # 编译出的 PDF 保留（便于在 GitHub 上直接阅读）
 !*.pdf
