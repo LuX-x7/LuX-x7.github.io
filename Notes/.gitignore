@@ -1,0 +1,30 @@
+# LaTeX 编译中间产物
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex
+*.xdv
+*.bbl
+*.blg
+*.spl
+*.nav
+*.snm
+*.vrb
+
+# 本地备份 / 临时文件
+*.bak
+*.bak2
+*~
+.DS_Store
+
+# AI 助手的工作目录（不属于笔记内容，且可能含本地上下文）
+.workbuddy/
+
+# 编译出的 PDF 保留（便于在 GitHub 上直接阅读）
+!*.pdf

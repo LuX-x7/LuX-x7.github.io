@@ -1,0 +1,50 @@
+{
+  // ─────────────────────────────────────────────────────────────────────
+  // LaTeX Workshop 配置（本项目是中文文档 ctexart，必须用 XeLaTeX 编译）
+  //
+  // 为什么之前 VS Code 里 Run 一直报错：
+  //   扩展默认的第一个配方 "latexmk" 会传参 -pdf（= pdfLaTeX），而
+  //   recipe.default 默认是 "first"，所以 Build 直接跑 pdflatex。
+  //   命令行里的 -pdf 会覆盖 .latexmkrc 的 $pdf_mode，因此 .latexmkrc
+  //   救不了 VS Code；加之 forceRecipeUsage 默认 true，扩展会忽略
+  //   % !TEX program = xelatex 这类魔法注释。
+  //
+  // 解决办法：把 XeLaTeX 配方排到第一位（recipe.default = "first"）。
+  // 下方 tools 用的是扩展内置工具名 xelatexmk / latexmk，无需自定义。
+  // ─────────────────────────────────────────────────────────────────────
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "XeLaTeX (latexmk)",
+      "tools": ["xelatexmk"]
+    },
+    {
+      "name": "pdfLaTeX (latexmk) — 本文件会报错",
+      "tools": ["latexmk"]
+    }
+  ],
+  "latex-workshop.latex.recipe.default": "first",
+
+  // 改动文件后自动重新编译
+  "latex-workshop.latex.autoBuild.run": "onFileChange",
+
+  // ─────────────────────────────────────────────────────────────────────
+  // 左右分屏：左边 .tex 源码，右边 PDF
+  //
+  //   viewer = "tab"            用 VS Code 内置标签页显示 PDF（不开外部浏览器）
+  //   tab.editorGroup = "right"  PDF 固定开在当前编辑组右侧的新编辑组里，
+  //                              于是一按快捷键就自动变成左右分屏
+  //   zoom = "page-width"        打开时按页宽缩放，适合阅读
+  //
+  // 快捷键（光标在 .tex 文件里时生效）：
+  //   ⌘⌥B  编译           ⌘⌥V  打开 / 聚焦 PDF 预览
+  //   ⌘⌥J  把 PDF 跳到源码光标处（正向 SyncTeX）
+  //   PDF 里 ⌘+单击        反向跳回源码对应行（反向 SyncTeX）
+  // ─────────────────────────────────────────────────────────────────────
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.view.pdf.tab.editorGroup": "right",
+  "latex-workshop.view.pdf.zoom": "page-width"
+
+  // 想让 PDF 每次编译后自动滚到光标所在位置（类似 Overleaf 的跟随效果），
+  // 就把下面这行的注释去掉。注意 autoBuild 是改一次编译一次，可能会有点跟手。
+  // ,"latex-workshop.synctex.afterBuild.enabled": true
+}
