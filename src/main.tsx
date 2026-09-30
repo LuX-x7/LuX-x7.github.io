@@ -8,6 +8,13 @@ const navigation = [["Home", "/"], ["About", "/about/"], ["Writing", "/writing/"
 
 const writingEntries = [
   {
+    date: "2026.09.30",
+    title: "Transformer",
+    description: "Notes on the Transformer architecture — from sequence tasks and token embeddings to scaled dot-product attention, multi-head attention, and the masked decoder with cross-attention, with step-by-step derivations.",
+    format: "PDF",
+    href: "/pdfs/Transformer.pdf"
+  },
+  {
     date: "2026.09.23",
     title: "Diffusion Model",
     description: "Notes on denoising diffusion probabilistic models — from the forward noising chain and the ELBO derivation to the reverse process that generates samples.",
