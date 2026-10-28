@@ -1,0 +1,21 @@
+backend:
+  name: github
+  repo: LuX-x7/LuX-x7.github.io
+  branch: main
+  # Replace this URL with your deployed GitHub OAuth provider before using the editor.
+  base_url: https://YOUR-OAUTH-PROVIDER.example
+  auth_endpoint: auth
+media_folder: public/uploads
+public_folder: /uploads
+collections:
+  - name: writing
+    label: 随笔
+    label_singular: 文章
+    folder: content/writing
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: 标题, name: title, widget: string}
+      - {label: 日期, name: date, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
+      - {label: 简介, name: description, widget: text, required: false}
+      - {label: 正文, name: body, widget: markdown}

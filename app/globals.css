@@ -210,3 +210,34 @@ footer { padding: 26px 0 42px; border-top: 1px solid var(--border); color: var(-
   .footer-name { font-size: 16px; }
   footer { padding: 22px 0 34px; font-size: 13.5px; }
 }
+
+/* A quieter reading layout, with room for dates and longer titles. */
+:root { --background: #faf9f6; --text: #252a2e; --heading: #1e2529; --body-copy: #434b4e; --secondary: #667170; --border: #dedfd9; --link: #315f5a; --accent: #64887b; --accent-soft: #e7efeb; --hover: #f0f2ed; }
+:root[data-theme="dark"] { --background: #161c1b; --text: #e5e8e2; --heading: #f0f2eb; --body-copy: #c7d0c8; --secondary: #a2afa6; --border: #34403b; --link: #a2cbb8; --accent: #88b09b; --accent-soft: #263b32; --hover: #202a26; }
+.site-header, .site-content, footer { max-width: 980px; }
+nav a[aria-current="page"] { color: var(--heading); }
+nav a[aria-current="page"]::after { transform: scaleX(1); }
+.introduction { align-items: start; }
+.intro-links { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 22px; font-size: 15px !important; }
+.home-section > h2::before { display: none; }
+.entry, .writing-index article { grid-template-columns: 110px minmax(0, 1fr) 58px; }
+.writing-section { margin-bottom: 60px; }
+.writing-section > h2 { margin-bottom: 18px; }
+.article-page { max-width: 740px; margin: 0 auto; }
+.back-link { display: inline-block; margin-bottom: 48px; font-size: 15px; }
+.article-page header { margin-bottom: 48px; padding-bottom: 30px; border-bottom: 1px solid var(--border); }
+.article-page header time { color: var(--secondary); }
+.article-page header h1 { margin: 12px 0; }
+.article-page header p { color: var(--secondary); }
+.article-body { color: var(--body-copy); overflow-wrap: anywhere; }
+.article-body p, .article-body ul, .article-body ol, .article-body blockquote { margin-bottom: 1.3em; }
+.article-body h2, .article-body h3 { margin-top: 2em; }
+.article-body img { max-width: 100%; height: auto; }
+.article-body blockquote { margin-left: 0; padding-left: 20px; border-left: 3px solid var(--accent); }
+.article-body pre { overflow-x: auto; padding: 16px; background: var(--hover); }
+@media (max-width: 600px) {
+  .entry, .writing-index article { grid-template-columns: 90px minmax(0, 1fr); gap: 12px; }
+  .introduction { grid-template-columns: 1fr; }
+  .introduction img { width: 112px; height: 112px; }
+  .intro-links { gap: 16px; }
+}

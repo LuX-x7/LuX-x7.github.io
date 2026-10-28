@@ -14,7 +14,7 @@ Deep Reinforcement Learning · Robot Learning · Robotic Manipulation
 
 ## 👋 About
 
-I am **Xiao Lu (肖路)**, a master's student in the School of Artificial Intelligence and Robotics at **Hunan University**, where I work on **robotic manipulation**. My research interests include deep reinforcement learning, robot learning, and robotic manipulation.
+I am **Lu Xiao (肖路)**, a master's student in the School of Artificial Intelligence and Robotics at **Hunan University**, where I work on **robotic manipulation**. My research interests include deep reinforcement learning, robot learning, and robotic manipulation.
 
 I earned my B.Eng. in Electronic Information Engineering from **Jiluan Academy, Nanchang University**. I also completed six months of research training through the April programme at **Shenzhen X-Institute**, and later served as a visiting student at **Tsinghua University** and **Westlake University**.
 
@@ -50,9 +50,9 @@ LaTeX notes on what I am currently studying. Sources live in [`Notes/`](Notes/);
 A static personal site built with **React + Vite + TypeScript**, deployed to **GitHub Pages** through GitHub Actions.
 
 ```bash
-npm install
-npm run dev      # local development
-npm run build    # production build
+pnpm install
+pnpm run dev      # local development
+pnpm run build    # production build
 ```
 
 ## 📫 Contact
@@ -60,3 +60,11 @@ npm run build    # production build
 - **Email** — [luxiao.x7@gmail.com](mailto:luxiao.x7@gmail.com)
 - **WeChat** — `LuX_Maphy`
 - **Website** — [lux-x7.github.io](https://lux-x7.github.io)
+
+## Mobile writing
+
+Essays are stored as Markdown in `content/writing/` and rendered as web pages at build time. Existing PDF notes remain unchanged. The Decap CMS editor is available at `/admin/` after deployment.
+
+Before the editor can sign in, deploy a GitHub OAuth provider and configure its URL as `backend.base_url` in `public/admin/config.yml`. Register a GitHub OAuth app with the provider's callback URL, and configure the provider with the app credentials and site origin according to its instructions. GitHub Pages cannot run the OAuth server itself. Never put a client secret or personal access token in this public repository. See [Decap authentication documentation](https://decapcms.org/docs/authentication/).
+
+After setup, sign in at `/admin/`, create an article, and publish it. Publishing commits to `main`, triggering the GitHub Pages workflow; the article appears after deployment succeeds. Content and uploads in this public repository are public. To edit on a computer, add a Markdown file to `content/writing/` with `title`, `date` (YYYY-MM-DD), and optional `description` in YAML front matter.
