@@ -80,7 +80,6 @@ function Home() {
   return <main className="home">
     <section className="home-hero" aria-labelledby="home-name">
       <div className="home-hero-copy">
-        <p className="home-eyebrow">Personal website <span> / </span> 个人主页</p>
         <h1 id="home-name">Lu Xiao <span>肖路</span></h1>
         <p className="home-intro">I am a master’s student at the School of Artificial Intelligence and Robotics, Hunan University. My research focuses on robotic manipulation, and I am interested in robot learning and deep reinforcement learning.</p>
         <div className="home-contact"><a href="mailto:luxiao.x7@gmail.com">Email</a><a href="https://github.com/LuX-x7">GitHub</a><a href="/about/">About me <span aria-hidden="true">↗</span></a></div>
@@ -88,7 +87,7 @@ function Home() {
       <figure className="home-portrait"><img src="/portrait.jpg" alt="Lu Xiao sitting in a mountain landscape" width="630" height="648" fetchPriority="high" /><figcaption><span>肖路</span><span>LU XIAO</span></figcaption></figure>
     </section>
     <section className="home-writing" aria-labelledby="writing-heading">
-      <div className="home-section-title"><div><p>Writing &amp; notes</p><h2 id="writing-heading">What I’m reading<br /><em>and thinking about.</em></h2></div><a href="/writing/">All writing <span aria-hidden="true">↗</span></a></div>
+      <div className="home-section-title"><div><h2 id="writing-heading">Recent writing</h2></div><a href="/writing/">All writing <span aria-hidden="true">↗</span></a></div>
       <div className="home-writing-list">{recent.map((item, index) => <a className="home-writing-item" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined} key={item.href}><span className="writing-number">{String(index + 1).padStart(2, "0")}</span><span className="writing-title">{item.title}<small>{item.format === "PDF" ? "Learning notes · PDF" : "Essay"}</small></span><time>{item.date.replaceAll(".", "-")}</time><span className="writing-arrow" aria-hidden="true">↗</span></a>)}</div>
     </section>
   </main>;
