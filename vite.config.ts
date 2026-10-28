@@ -14,7 +14,6 @@ export default defineConfig({
     load(id) {
       if (id !== "\0virtual:writing") return;
       const directory = `${root}content/writing`;
-      this.addWatchFile(directory);
       const posts = readdirSync(directory).filter(name => name.endsWith(".md")).map(name => {
         const path = `${directory}/${name}`;
         this.addWatchFile(path);

@@ -76,10 +76,14 @@ function Layout({ children }: { children: ReactNode }) {
 const LinkOut = ({ href, children }: { href: string; children: ReactNode }) => <a href={href} target="_blank" rel="noreferrer">{children}</a>;
 
 function Home() {
-  return <main>
-    <section className="introduction"><img src="/portrait.jpg" alt="Portrait of Lu Xiao" width="210" height="210" fetchPriority="high" /><div><h1>Lu Xiao <span className="chinese-name">肖路</span></h1><p>I am a master&apos;s student in the School of Artificial Intelligence and Robotics at Hunan University. My research interests include deep reinforcement learning, robot learning, and robotic manipulation.</p><p>This website is a record of what I learn, write, and build.</p><p className="intro-links"><a href="mailto:luxiao.x7@gmail.com">Email</a><a href="https://github.com/LuX-x7">GitHub</a><a href="/about/">More about me →</a></p></div></section>
-    <section className="home-section"><h2>Recent writing</h2><div className="entry-list">{writingEntries.slice(0, 3).map(item => <a className="entry" href={item.href} target="_blank" rel="noreferrer" key={item.title}><time>{item.date}</time><span>{item.title}</span><small>{item.format}</small></a>)}</div><p className="more-link"><a href="/writing/">All writing →</a></p></section>
-    <section className="home-section"><h2>Projects</h2><div className="entry-list">{projectEntries.slice(0, 3).map(item => <a className="entry" href="/projects/" key={item.title}><time>{item.date}</time><span>{item.title}</span><small>Project</small></a>)}</div><p className="more-link"><a href="/projects/">View projects →</a></p></section>
+  const recent = [...writingEntries.map(item => ({ ...item, external: true })), ...posts.map(post => ({ date: post.date, title: post.title, description: post.description, format: "Essay", href: `/writing/article/?slug=${encodeURIComponent(post.slug)}`, external: false }))].sort((a, b) => b.date.replaceAll(".", "-").localeCompare(a.date.replaceAll(".", "-"))).slice(0, 4);
+  return <main className="home">
+    <section className="introduction">
+      <div className="intro-copy"><p className="intro-kicker">Hunan University · Robotics</p><h1>Lu Xiao <span className="chinese-name">肖路</span></h1><p>I am a master&apos;s student at the School of Artificial Intelligence and Robotics, Hunan University. My research focuses on robotic manipulation, and I am interested in robot learning and deep reinforcement learning.</p><p className="intro-links"><a href="mailto:luxiao.x7@gmail.com">Email</a><a href="https://github.com/LuX-x7">GitHub</a><a href="/about/">More about me <span aria-hidden="true">↗</span></a></p></div>
+      <img src="/portrait.jpg" alt="Portrait of Lu Xiao" width="210" height="210" fetchPriority="high" />
+    </section>
+    <section className="home-section"><div className="home-section-heading"><h2>Recent writing</h2><a href="/writing/">View all <span aria-hidden="true">↗</span></a></div><div className="entry-list">{recent.map(item => <a className="entry" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined} key={item.href}><time>{item.date.replaceAll(".", "-")}</time><span>{item.title}</span><small>{item.format}</small></a>)}</div></section>
+    <section className="home-section home-projects"><div className="home-section-heading"><h2>Projects</h2><a href="/projects/">View all <span aria-hidden="true">↗</span></a></div><div className="entry-list">{projectEntries.map(item => <a className="entry" href="/projects/" key={item.title}><time>{item.date.replaceAll(".", "-")}</time><span>{item.title}</span><small>{item.status}</small></a>)}</div></section>
   </main>;
 }
 
