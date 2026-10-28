@@ -1,10 +1,7 @@
 backend:
-  name: github
-  repo: LuX-x7/LuX-x7.github.io
+  name: turbo-github
+  turbo_site_id: 8ba77a83-962e-4b93-95de-5315ca5a7fc4
   branch: main
-  # Replace this URL with your deployed GitHub OAuth provider before using the editor.
-  base_url: https://YOUR-OAUTH-PROVIDER.example
-  auth_endpoint: auth
 media_folder: public/uploads
 public_folder: /uploads
 collections:

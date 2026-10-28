@@ -65,6 +65,6 @@ pnpm run build    # production build
 
 Essays are stored as Markdown in `content/writing/` and rendered as web pages at build time. Existing PDF notes remain unchanged. The Decap CMS editor is available at `/admin/` after deployment.
 
-Before the editor can sign in, deploy a GitHub OAuth provider and configure its URL as `backend.base_url` in `public/admin/config.yml`. Register a GitHub OAuth app with the provider's callback URL, and configure the provider with the app credentials and site origin according to its instructions. GitHub Pages cannot run the OAuth server itself. Never put a client secret or personal access token in this public repository. See [Decap authentication documentation](https://decapcms.org/docs/authentication/).
+The editor uses Decap Turbo for authentication. The Turbo site must be connected to this repository, with `public/admin/config.yml` as its config path and `https://lux-x7.github.io/admin/` as an allowed admin URL. Sign in with the Turbo account that has access to the site. See [Decap Turbo documentation](https://decapcms.org/docs/turbo-connecting-a-site/).
 
 After setup, sign in at `/admin/`, create an article, and publish it. Publishing commits to `main`, triggering the GitHub Pages workflow; the article appears after deployment succeeds. Content and uploads in this public repository are public. To edit on a computer, add a Markdown file to `content/writing/` with `title`, `date` (YYYY-MM-DD), and optional `description` in YAML front matter.
