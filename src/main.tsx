@@ -80,23 +80,24 @@ function Home() {
   return <main className="home">
     <section className="home-hero" aria-labelledby="home-name">
       <div className="home-hero-copy">
+        <p className="home-eyebrow">HUNAN UNIVERSITY <span> / </span> ROBOTICS &amp; AI</p>
         <h1 id="home-name">Lu Xiao <span>肖路</span></h1>
-        <p className="home-intro">I am a master’s student at the School of Artificial Intelligence and Robotics, Hunan University. My research focuses on robotic manipulation, and I am interested in robot learning and deep reinforcement learning.</p>
-        <div className="home-contact"><a href="mailto:luxiao.x7@gmail.com">Email</a><a href="https://github.com/LuX-x7">GitHub</a><a href="/about/">About me <span aria-hidden="true">↗</span></a></div>
+        <p className="home-intro">I study how robots learn to interact with the world. I’m a master’s student at Hunan University, working on robotic manipulation and exploring robot learning and deep reinforcement learning.</p>
+        <div className="home-contact"><a className="contact-primary" href="/about/">More about me <span aria-hidden="true">↗</span></a><a href="mailto:luxiao.x7@gmail.com">Email <span aria-hidden="true">↗</span></a><a href="https://github.com/LuX-x7">GitHub <span aria-hidden="true">↗</span></a></div>
       </div>
-      <figure className="home-portrait"><img src="/portrait.jpg" alt="Lu Xiao sitting in a mountain landscape" width="630" height="648" fetchPriority="high" /><figcaption><span>肖路</span><span>LU XIAO</span></figcaption></figure>
+      <figure className="home-portrait"><img src="/portrait.jpg" alt="Lu Xiao sitting in a mountain landscape" width="630" height="648" fetchPriority="high" /><figcaption><span>LU XIAO / 肖路</span><span>RESEARCH &amp; NOTES</span></figcaption></figure>
     </section>
     <section className="home-writing" aria-labelledby="writing-heading">
-      <div className="home-section-title"><div><h2 id="writing-heading">Recent writing</h2></div><a href="/writing/">All writing <span aria-hidden="true">↗</span></a></div>
-      <div className="home-writing-list">{recent.map((item, index) => <a className="home-writing-item" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined} key={item.href}><span className="writing-number">{String(index + 1).padStart(2, "0")}</span><span className="writing-title">{item.title}<small>{item.format === "PDF" ? "Learning notes · PDF" : "Essay"}</small></span><time>{item.date.replaceAll(".", "-")}</time><span className="writing-arrow" aria-hidden="true">↗</span></a>)}</div>
+      <div className="home-section-title"><div><p>THE NOTEBOOK / 01</p><h2 id="writing-heading">Learning,<br />in progress.</h2><p className="section-description">Notes and reflections on the ideas I’m exploring.</p></div><a href="/writing/">Explore all writing <span aria-hidden="true">↗</span></a></div>
+      <div className="home-writing-list">{recent.map((item, index) => <a className="home-writing-item" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined} key={item.href}><span className="writing-number">{String(index + 1).padStart(2, "0")}</span><span className="writing-title">{item.title}<small>{item.description}</small><span className="writing-format">{item.format === "PDF" ? "LEARNING NOTES · PDF" : "ESSAY"}</span></span><time>{item.date.replaceAll(".", "-")}</time><span className="writing-arrow" aria-hidden="true">↗</span></a>)}</div>
     </section>
   </main>;
 }
 
 function About() {
   return <main>
-    <header className="page-header"><h1>About</h1><p>My education and research experience.</p></header>
-    <section className="text-section"><h2>Biography</h2><p>I am Lu Xiao (肖路), a master&apos;s student in the School of Artificial Intelligence and Robotics at Hunan University, where I work on robotic manipulation. I earned my B.Eng. in Electronic Information Engineering from Jiluan Academy at Nanchang University. I also completed six months of research training through the April programme at Shenzhen X-Institute, and later served as a visiting student at Tsinghua University and Westlake University.</p></section>
+    <header className="page-header"><h1>About</h1><p>A little more about my background, research, and how to reach me.</p></header>
+    <section className="text-section"><h2>Biography</h2><p>I am Lu Xiao (肖路), a master&apos;s student at Hunan University&apos;s School of Artificial Intelligence and Robotics. My research focuses on robotic manipulation, with interests in robot learning and deep reinforcement learning. I received my B.Eng. in Electronic Information Engineering from Jiluan Academy at Nanchang University. I also trained through the April programme at Shenzhen X-Institute, and my research experience includes work at Tsinghua SIGS and Westlake University.</p></section>
     <section className="text-section"><h2>Education</h2>
       <div className="dated-item"><time>2026.09–2029.06 (Expected)</time><div><h3>M.Sc. in Artificial Intelligence</h3><p>School of Artificial Intelligence and Robotics, Hunan University</p></div><img className="institution-logo" src="/logos/hnu.png" alt="Hunan University emblem" /></div>
       <div className="dated-item"><time>2022.09–2026.06</time><div><h3>B.Eng. in Electronic Information Engineering</h3><p>Jiluan Academy, Nanchang University</p></div><img className="institution-logo" src="/logos/ncu.png" alt="Nanchang University emblem" /></div>
@@ -117,7 +118,7 @@ function Writing() {
     <main>
       <header className="page-header">
         <h1>Writing</h1>
-        <p>Notes on what I am studying, alongside essays and reflections.</p>
+        <p>Learning notes, essays, and reflections on the ideas I am exploring.</p>
       </header>
 
       {posts.length > 0 && <section className="writing-section"><h2>Essays &amp; reflections</h2><div className="writing-index">{posts.map(post => <article key={post.slug}><time>{post.date}</time><div><h2><a href={`/writing/article/?slug=${encodeURIComponent(post.slug)}`}>{post.title}</a></h2>{post.description && <p>{post.description}</p>}</div><small>Essay</small></article>)}</div></section>}
@@ -140,7 +141,7 @@ function Writing() {
 
       </section>
       <p className="quiet-note">
-        PDF notes will open directly in the browser and remain available for download.
+        Notes open as PDFs in a new tab and can be downloaded for offline reading.
       </p>
     </main>
   );
@@ -151,11 +152,11 @@ function Article() {
   const slug = new URLSearchParams(location.search).get("slug");
   const post = posts.find(item => item.slug === slug);
   useEffect(() => { document.title = post ? `${post.title} — Lu Xiao` : "Writing — Lu Xiao"; }, [post]);
-  return <main className="article-page"><a className="back-link" href="/writing/">← All writing</a>{post ? <article><header><time>{post.date}</time><h1>{post.title}</h1>{post.description && <p>{post.description}</p>}</header><div className="article-body" dangerouslySetInnerHTML={{ __html: post.html }} /></article> : <p>Article not found.</p>}</main>;
+  return <main className="article-page"><a className="back-link" href="/writing/">← All writing</a>{post ? <article><header><time>{post.date}</time><h1>{post.title}</h1>{post.description && <p>{post.description}</p>}</header><div className="article-body" dangerouslySetInnerHTML={{ __html: post.html }} /></article> : <p>Sorry, this article could not be found. Browse <a href="/writing/">all writing</a> to find another.</p>}</main>;
 }
 
 function Projects() {
-  return <main><header className="page-header"><h1>Projects</h1><p>Selected things I have built or am currently working on.</p></header>{projectEntries.map(project => <section className="project-item" key={project.title}><div className="project-heading"><time>{project.date}</time><h2>{project.title}</h2></div><p>{project.description}</p><p className="project-meta">{project.status}</p></section>)}</main>;
+  return <main><header className="page-header"><h1>Projects</h1><p>A selection of things I am building and learning from.</p></header>{projectEntries.map(project => <section className="project-item" key={project.title}><div className="project-heading"><time>{project.date}</time><h2>{project.title}</h2></div><p>{project.description}</p><p className="project-meta">{project.status}</p></section>)}</main>;
 }
 
 const page = document.body.dataset.page;
