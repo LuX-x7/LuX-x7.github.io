@@ -78,18 +78,19 @@ const LinkOut = ({ href, children }: { href: string; children: ReactNode }) => <
 function Home() {
   const recent = [...writingEntries.map(item => ({ ...item, external: true })), ...posts.map(post => ({ date: post.date, title: post.title, description: post.description, format: "Essay", href: `/writing/article/?slug=${encodeURIComponent(post.slug)}`, external: false }))].sort((a, b) => b.date.replaceAll(".", "-").localeCompare(a.date.replaceAll(".", "-"))).slice(0, 4);
   return <main className="home">
-    <section className="home-hero" aria-labelledby="home-name">
-      <div className="home-hero-copy">
-        <p className="home-eyebrow">HUNAN UNIVERSITY <span> / </span> ROBOTICS &amp; AI</p>
+    <section className="home-profile" aria-labelledby="home-name">
+      <div className="home-profile-copy">
         <h1 id="home-name">Lu Xiao <span>肖路</span></h1>
-        <p className="home-intro">I study how robots learn to interact with the world. I’m a master’s student at Hunan University, working on robotic manipulation and exploring robot learning and deep reinforcement learning.</p>
-        <div className="home-contact"><a className="contact-primary" href="/about/">More about me <span aria-hidden="true">↗</span></a><a href="mailto:luxiao.x7@gmail.com">Email <span aria-hidden="true">↗</span></a><a href="https://github.com/LuX-x7">GitHub <span aria-hidden="true">↗</span></a></div>
+        <p>I am a master’s student in the School of Artificial Intelligence and Robotics at Hunan University, where I work on robotic manipulation. My research interests include robot learning and deep reinforcement learning.</p>
+        <p>Previously, I received my B.Eng. in Electronic Information Engineering from Nanchang University. I have also spent time at Shenzhen X-Institute, Tsinghua SIGS, and Westlake University.</p>
+        <div className="home-links"><a href="mailto:luxiao.x7@gmail.com">Email</a><a href="https://github.com/LuX-x7">GitHub</a><a href="/about/">More about me</a></div>
       </div>
-      <figure className="home-portrait"><img src="/portrait.jpg" alt="Lu Xiao sitting in a mountain landscape" width="630" height="648" fetchPriority="high" /><figcaption><span>LU XIAO / 肖路</span><span>RESEARCH &amp; NOTES</span></figcaption></figure>
+      <img className="profile-photo" src="/portrait.jpg" alt="Lu Xiao sitting in a mountain landscape" width="630" height="648" fetchPriority="high" />
     </section>
-    <section className="home-writing" aria-labelledby="writing-heading">
-      <div className="home-section-title"><div><p>THE NOTEBOOK / 01</p><h2 id="writing-heading">Learning,<br />in progress.</h2><p className="section-description">Notes and reflections on the ideas I’m exploring.</p></div><a href="/writing/">Explore all writing <span aria-hidden="true">↗</span></a></div>
-      <div className="home-writing-list">{recent.map((item, index) => <a className="home-writing-item" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined} key={item.href}><span className="writing-number">{String(index + 1).padStart(2, "0")}</span><span className="writing-title">{item.title}<small>{item.description}</small><span className="writing-format">{item.format === "PDF" ? "LEARNING NOTES · PDF" : "ESSAY"}</span></span><time>{item.date.replaceAll(".", "-")}</time><span className="writing-arrow" aria-hidden="true">↗</span></a>)}</div>
+    <section className="home-notes" aria-labelledby="writing-heading">
+      <div className="home-notes-heading"><h2 id="writing-heading">Recent writing</h2><a href="/writing/">All writing →</a></div>
+      <p>Notes and reflections from my studies.</p>
+      <div className="home-note-list">{recent.map(item => <article className="home-note" key={item.href}><time dateTime={item.date.replaceAll(".", "-")}>{item.date.replaceAll(".", "-")}</time><div><h3><a href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined}>{item.title}</a></h3><p>{item.description}</p><span>{item.format === "PDF" ? "PDF notes" : "Essay"}</span></div></article>)}</div>
     </section>
   </main>;
 }
