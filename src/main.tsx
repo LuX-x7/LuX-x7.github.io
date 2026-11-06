@@ -6,7 +6,7 @@ import { profile, education, experience, research } from "./profile";
 
 type Theme = "light" | "dark";
 
-const navigation = [["Home", "/"], ["About", "/about/"], ["Writing", "/writing/"], ["Projects", "/projects/"]];
+const navigation = [["About Me", "/#about-me"], ["Research", "/#research"], ["Education", "/#education"], ["Experience", "/#experience"], ["Writing", "/writing/"], ["Projects", "/projects/"]];
 
 const writingEntries = [
   {
@@ -74,31 +74,57 @@ function ThemeToggle() {
 
 function Sidebar() {
   return <aside className="profile-sidebar" aria-label="Personal profile">
-    <a href="/" className="portrait-link" aria-label="Lu Xiao home"><img className="profile-photo" src={profile.portrait} alt="Lu Xiao sitting in a mountain landscape" width="630" height="648" fetchPriority="high" /></a>
+    <a href="/" className="portrait-link" aria-label="Lu Xiao home"><img className="profile-photo" src={profile.portrait} alt="Lu Xiao sitting in a mountain landscape" width="176" height="176" fetchPriority="high" /></a>
     <div className="profile-identity"><h2>{profile.name} <span lang="zh">{profile.chineseName}</span></h2><p className="profile-role">{profile.role}</p><p>{profile.institution}</p><p className="profile-school">{profile.school}</p></div>
-    <div className="social-links"><a href={`mailto:${profile.email}`} aria-label="Email Lu Xiao" title={profile.email}><Icon name="mail"/></a><a href={profile.github} target="_blank" rel="noreferrer" aria-label="Lu Xiao on GitHub" title="GitHub"><Icon name="github"/></a><a href="/about/#contact" aria-label="Contact details" title="Contact details"><Icon name="location"/></a></div>
-    <section className="research-interests"><h3>Research interests</h3><ul>{profile.interests.map(interest => <li key={interest}>{interest}</li>)}</ul></section>
-    <a className="sidebar-contact" href={`mailto:${profile.email}`}>{profile.email}<Icon name="arrow"/></a>
+    <p className="sidebar-bio">Robot learning, reinforcement learning, and robotic manipulation.</p>
+    <ul className="social-links"><li><a href={`mailto:${profile.email}`} title={profile.email}><Icon name="mail"/>Email</a></li><li><a href={profile.github} target="_blank" rel="noreferrer"><Icon name="github"/>GitHub</a></li><li><a href="/about/#contact"><Icon name="location"/>Contact &amp; WeChat</a></li></ul>
   </aside>;
 }
 
 function Layout({ children }: { children: ReactNode }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [active, setActive] = useState(location.pathname.startsWith("/writing/") ? "/writing/" : location.pathname.startsWith("/projects/") ? "/projects/" : "/#about-me");
+  useEffect(() => {
+    if (document.body.dataset.page !== "home") return;
+    let frame = 0;
+    function update() {
+      const threshold = (document.querySelector(".site-header")?.getBoundingClientRect().height || 64) + 30;
+      const sections = ["about-me", "research", "education", "experience", "writing"];
+      let current = "about-me";
+      for (const id of sections) {
+        if ((document.getElementById(id)?.getBoundingClientRect().top ?? Infinity) <= threshold) current = id;
+      }
+      setActive(current === "writing" ? "/writing/" : `/#${current}`);
+    }
+    function onScroll() { cancelAnimationFrame(frame); frame = requestAnimationFrame(update); }
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => { cancelAnimationFrame(frame); window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
+  }, []);
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) { if (event.key === "Escape") setMenuOpen(false); }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   return <>
     <a className="skip-link" href="#main-content">Skip to content</a>
-    <header className="site-header"><a className="site-title" href="/">Lu Xiao<span className="title-dot">.</span></a><div className="header-actions"><nav aria-label="Main navigation">{navigation.map(([label, href]) => <a href={href} key={href} aria-current={location.pathname === href || (href !== "/" && location.pathname.startsWith(href)) ? "page" : undefined}>{label}</a>)}</nav><span className="header-divider"/><ThemeToggle /></div></header>
+    <header className={`site-header${menuOpen ? " menu-open" : ""}`}><a className="site-title" href="/">Homepage</a><div className="header-actions"><nav id="main-navigation" aria-label="Main navigation">{navigation.map(([label, href]) => <a href={href} key={href} className={active === href ? "is-active" : undefined} aria-current={active === href ? (href.includes("#") ? "location" : "page") : undefined} onClick={() => setMenuOpen(false)}>{label}</a>)}</nav><ThemeToggle/><button className="menu-toggle" type="button" aria-label="Navigation menu" aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen(open => !open)}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">{menuOpen ? <path d="m6 6 12 12M6 18 18 6"/> : <path d="M4 6h16M4 12h16M4 18h16"/>}</svg><span>Menu</span></button></div></header>
     <div className="site-content"><Sidebar/><div className="main-column" id="main-content" tabIndex={-1}>{children}</div></div>
-    <footer><span>© {new Date().getFullYear()} Lu Xiao</span><span>Design inspired by <a href="https://github.com/xyjoey/PRISM" target="_blank" rel="noreferrer">PRISM</a></span><a href="#main-content">Back to top ↑</a></footer>
+    <footer><span>© {new Date().getFullYear()} Lu Xiao</span><span>Layout inspired by <a href="https://github.com/RayeRen/acad-homepage.github.io" target="_blank" rel="noreferrer">AcadHomepage</a> · Navigation inspired by <a href="https://github.com/xyjoey/PRISM" target="_blank" rel="noreferrer">PRISM</a></span><a href="#main-content">Back to top ↑</a></footer>
   </>;
 }
 
 const LinkOut = ({ href, children }: { href: string; children: ReactNode }) => <a href={href} target="_blank" rel="noreferrer">{children}</a>;
 
+const sectionSymbols: Record<string, string> = { Research: "📝", Education: "📖", "Research Experience": "💻", "Writing & Notes": "📚" };
+
 function SectionHeading({ title, href, link }: { title: string; href?: string; link?: string }) {
-  return <div className="section-heading"><h2>{title}</h2>{href && <a href={href}>{link || "View all"}<Icon name="arrow"/></a>}</div>;
+  return <div className="section-heading"><h2>{sectionSymbols[title] && <span className="section-symbol" aria-hidden="true">{sectionSymbols[title]}</span>}{title}</h2>{href && <a href={href}>{link || "View all"}<Icon name="arrow"/></a>}</div>;
 }
 
 function Education() {
-  return <div className="education-list">{education.map(item => <article className="affiliation-item" key={item.degree}><img src={item.logo} alt={`${item.institution} emblem`} width="48" height="48"/><div><div className="affiliation-heading"><h3>{item.institution}</h3><time>{item.date}</time></div><p className="degree">{item.degree}</p><p>{item.detail}</p></div></article>)}</div>;
+  return <div className="education-list">{education.map(item => <article className="affiliation-item" key={item.degree}><img src={item.logo} alt={`${item.institution} emblem`} width="80" height="80"/><div><div className="affiliation-heading"><h3>{item.institution}</h3><time>{item.date}</time></div><p className="degree">{item.degree}</p><p>{item.detail}</p></div></article>)}</div>;
 }
 
 function Experience({ compact = false }: { compact?: boolean }) {
@@ -106,21 +132,27 @@ function Experience({ compact = false }: { compact?: boolean }) {
 }
 
 function Biography() {
-  return <div className="biography"><p>I am a master’s student at the <a href="https://www.hnu.edu.cn/" target="_blank" rel="noreferrer">School of Artificial Intelligence and Robotics, Hunan University</a>, working with Prof. <LinkOut href={experience[0].href}>Leyuan Fang</LinkOut> in the Intelligent Sensing and Action Lab.</p><p>My research focuses on <strong>robotic manipulation</strong>, with interests in <strong>robot learning</strong> and <strong>deep reinforcement learning</strong>.</p><p>Previously, I received my B.Eng. in Electronic Information Engineering from Jiluan Academy, Nanchang University. I also completed research training through the April programme at Shenzhen X-Institute and spent time at Tsinghua SIGS and Westlake University.</p></div>;
+  return <div className="biography">
+    <p>I am <strong>Lu Xiao (肖路)</strong>, a master’s student in the <LinkOut href="https://www.hnu.edu.cn/">School of Artificial Intelligence and Robotics at Hunan University</LinkOut>. Since September 2026, I have been working with Prof. <LinkOut href={experience[0].href}>Leyuan Fang</LinkOut> in the Intelligent Sensing and Action Lab. My research focuses on <strong>robotic manipulation</strong>, with interests in <strong>robot learning</strong> and <strong>deep reinforcement learning</strong>.</p>
+    <p>I received my B.Eng. in Electronic Information Engineering from <strong>Jiluan Academy, Nanchang University</strong> in June 2026. During my undergraduate studies, I gained research experience in several groups at Nanchang University: I worked with Prof. <LinkOut href={experience[4].href}>Xiang Wang</LinkOut> in the School of Chemistry and Chemical Engineering from September 2022 to June 2023, and with Prof. <LinkOut href={experience[3].href}>Zhi Hu</LinkOut> in the School of Advanced Manufacturing from June 2023 to January 2025.</p>
+    <p>From January to September 2025, I was a research intern at <strong>Shenzhen X-Institute and Tsinghua SIGS</strong>, working with Prof. <LinkOut href={experience[2].href}>Xueqian Wang</LinkOut>. This period also included six months of research training through the April programme at Shenzhen X-Institute.</p>
+    <p>Before joining Hunan University, I was a visiting student at <strong>Westlake University</strong> from November 2025 to September 2026, working with Prof. <LinkOut href={experience[1].href}>Haibin Ling</LinkOut> in the Westlake Intelligent Computing and Application Lab.</p>
+    <p>My recent work includes a <strong>benchmark for unmanned aerial vehicles</strong> and a study of <strong>multi-agent collaboration</strong>. I also use this website to share <a href="/writing/">learning notes and writing</a> on topics I am studying, including Transformers, diffusion models, and the foundations of machine learning.</p>
+  </div>;
 }
 
 function Research() {
-  return <div className="research-list">{research.map((item, index) => <article className="research-item" key={item.title}><span className="research-number" aria-hidden="true">0{index + 1}</span><div><p className="research-category">{item.category}</p><h3>{item.title}</h3><p>{item.description}</p></div></article>)}</div>;
+  return <div className="research-list">{research.map(item => <article className="research-item" key={item.title}><h3>{item.title}</h3><p className="research-category">{item.category}</p><p>{item.description}</p></article>)}</div>;
 }
 
 function Home() {
   const recent = [...writingEntries.map(item => ({ ...item, external: true })), ...posts.map(post => ({ date: post.date, title: post.title, description: post.description, format: "Essay", href: `/writing/article/?slug=${encodeURIComponent(post.slug)}`, external: false }))].sort((a, b) => b.date.replaceAll(".", "-").localeCompare(a.date.replaceAll(".", "-"))).slice(0, 3);
   return <main className="home">
-    <section className="about-section"><p className="eyebrow">ROBOT LEARNING & MANIPULATION</p><h1>About me</h1><Biography/></section>
-    <section className="home-section"><SectionHeading title="Selected research" href="/projects/" link="All projects"/><Research/></section>
-    <section className="home-section"><SectionHeading title="Selected writing" href="/writing/" link="All writing"/><div className="note-cards">{recent.map(item => <article className="note-card" key={item.href}><div className="note-meta"><span>{item.format === "PDF" ? "Learning notes" : "Essay"}</span><time dateTime={item.date.replaceAll(".", "-")}>{item.date.replaceAll(".", "-")}</time></div><h3><a href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined}>{item.title}<span aria-hidden="true">↗</span></a></h3><p>{item.description}</p><a className="note-action" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined}>{item.format === "PDF" ? "Read PDF" : "Read essay"}<Icon name="arrow"/></a></article>)}</div></section>
-    <section className="home-section"><SectionHeading title="Education"/><Education/></section>
-    <section className="home-section"><SectionHeading title="Research experience" href="/about/#experience" link="Full background"/><Experience compact/></section>
+    <section className="about-section" id="about-me"><h1>About Me</h1><Biography/></section>
+    <section className="home-section" id="research"><SectionHeading title="Research" href="/projects/" link="All projects"/><Research/></section>
+    <section className="home-section" id="education"><SectionHeading title="Education"/><Education/></section>
+    <section className="home-section" id="experience"><SectionHeading title="Research Experience"/><Experience/></section>
+    <section className="home-section" id="writing"><SectionHeading title="Writing & Notes" href="/writing/" link="All writing"/><div className="note-cards">{recent.map(item => <article className="note-card" key={item.href}><div className="note-meta"><time dateTime={item.date.replaceAll(".", "-")}>{item.date.replaceAll(".", "-")}</time><span>{item.format === "PDF" ? "PDF notes" : "Essay"}</span></div><div className="note-copy"><h3><a href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined}>{item.title}</a></h3><p>{item.description}</p></div></article>)}</div></section>
   </main>;
 }
 

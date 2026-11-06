@@ -71,6 +71,6 @@ After setup, sign in at `/admin/`, create an article, and publish it. Publishing
 
 ## Profile and design
 
-The site's layout is inspired by [PRISM](https://github.com/xyjoey/PRISM), adapted to this React + Vite site. It includes a persistent desktop profile sidebar, responsive mobile layout, and light/dark themes.
+The site's layout follows [AcadHomepage](https://github.com/RayeRen/acad-homepage.github.io), adapted to this React + Vite site. It combines the AcadHomepage content layout with PRISM-inspired navigation: a sticky section directory, active-section highlighting, hover feedback, and a collapsible mobile menu. It also includes a desktop profile sidebar, readable typography, and light/dark themes. The homepage contains a detailed biography, research summaries, education, research experience, and writing.
 
 Update public profile information, education, research experience, and broad research summaries in `src/profile.ts`. Writing and PDF entries are in `src/main.tsx`; essays remain in `content/writing/`. Only add research details and links that are ready to be public.
