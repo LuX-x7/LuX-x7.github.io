@@ -56,7 +56,7 @@ pnpm run build    # production build
 ## 📫 Contact
 
 - **Email** — [luxiao.x7@gmail.com](mailto:luxiao.x7@gmail.com)
-- **WeChat** — `LuX_Maphy`
+- **WeChat** — `LuX_x7`
 - **Website** — [lux-x7.github.io](https://lux-x7.github.io)
 
 ## Mobile writing

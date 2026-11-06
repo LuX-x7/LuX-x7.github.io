@@ -7,7 +7,7 @@ export const profile = {
   school: "School of Artificial Intelligence and Robotics",
   email: "luxiao.x7@gmail.com",
   github: "https://github.com/LuX-x7",
-  wechat: "LuX_Maphy",
+  wechat: "LuX_x7",
   portrait: "/portrait.jpg",
   interests: ["Robot Learning", "Deep Reinforcement Learning", "Robotic Manipulation"],
 };
