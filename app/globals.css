@@ -75,6 +75,9 @@ nav a.is-active::after, nav a:hover::after { transform: scaleX(1); }
 .research-item:last-child { margin-bottom: 0; padding-bottom: 0; border: 0; }
 .research-item h3 { font-size: 18px; color: var(--link); margin-bottom: 5px; }
 .research-category { color: var(--secondary); font-size: 14px; margin-bottom: 6px; font-style: italic; }
+.research-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 8px; }
+.research-meta .research-category { margin: 0; }
+.research-status { display: inline-block; padding: 1px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--link); font-size: 13px; font-weight: 500; line-height: 1.6; white-space: nowrap; }
 .research-item p:last-child { margin: 0; }
 .affiliation-item { display: grid; grid-template-columns: 58px minmax(0,1fr); gap: 20px; padding: 17px 0; align-items: start; }
 .affiliation-item img { width: 58px; height: 58px; object-fit: contain; background: #fff; border-radius: 0; }

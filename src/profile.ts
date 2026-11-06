@@ -14,8 +14,8 @@ export const profile = {
 
 // Broad public summaries only; add titles and links when ready to share.
 export const research = [
-  { title: "UAV Benchmark", category: "Benchmark", description: "Developing a benchmark for the evaluation of unmanned aerial vehicle (UAV) systems." },
-  { title: "Multi-Agent Collaboration", category: "Multi-agent systems", description: "Studying how multiple agents coordinate and collaborate to accomplish shared tasks." },
+  { title: "UAV Benchmark", category: "Benchmark", status: "Under Review", description: "Developing a benchmark for the evaluation of unmanned aerial vehicle (UAV) systems." },
+  { title: "Multi-Agent Collaboration", category: "Multi-agent systems", status: "Under Review", description: "Studying how multiple agents coordinate and collaborate to accomplish shared tasks." },
 ];
 
 export const education = [

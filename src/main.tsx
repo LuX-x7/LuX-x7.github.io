@@ -140,7 +140,7 @@ function Biography() {
 }
 
 function Research() {
-  return <div className="research-list">{research.map(item => <article className="research-item" key={item.title}><h3>{item.title}</h3><p className="research-category">{item.category}</p><p>{item.description}</p></article>)}</div>;
+  return <div className="research-list">{research.map(item => <article className="research-item" key={item.title}><h3>{item.title}</h3><div className="research-meta"><p className="research-category">{item.category}</p><span className="research-status">{item.status}</span></div><p>{item.description}</p></article>)}</div>;
 }
 
 function Home() {
