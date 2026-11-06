@@ -68,3 +68,9 @@ Essays are stored as Markdown in `content/writing/` and rendered as web pages at
 The editor uses Decap Turbo for authentication. The Turbo site must be connected to this repository, with `public/admin/config.yml` as its config path and `https://lux-x7.github.io/admin/` as an allowed admin URL. Sign in with the Turbo account that has access to the site. See [Decap Turbo documentation](https://decapcms.org/docs/turbo-connecting-a-site/).
 
 After setup, sign in at `/admin/`, create an article, and publish it. Publishing commits to `main`, triggering the GitHub Pages workflow; the article appears after deployment succeeds. Content and uploads in this public repository are public. To edit on a computer, add a Markdown file to `content/writing/` with `title`, `date` (YYYY-MM-DD), and optional `description` in YAML front matter.
+
+## Profile and design
+
+The site's layout is inspired by [PRISM](https://github.com/xyjoey/PRISM), adapted to this React + Vite site. It includes a persistent desktop profile sidebar, responsive mobile layout, and light/dark themes.
+
+Update public profile information, education, research experience, and broad research summaries in `src/profile.ts`. Writing and PDF entries are in `src/main.tsx`; essays remain in `content/writing/`. Only add research details and links that are ready to be public.

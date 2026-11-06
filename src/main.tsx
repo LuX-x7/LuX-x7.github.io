@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import "../app/globals.css";
 import posts from "virtual:writing";
+import { profile, education, experience, research } from "./profile";
 
 type Theme = "light" | "dark";
 
@@ -43,75 +44,88 @@ const projectEntries = [
     title: "Personal learning website",
     description: "A simple home for my writing, PDF notes, and project work.",
     date: "2026.08.13",
-    status: "In progress"
+    status: "In progress",
+    href: "https://github.com/LuX-x7/LuX-x7.github.io"
   }
 ];
 
+function Icon({ name }: { name: "mail" | "github" | "location" | "sun" | "moon" | "arrow" }) {
+  const paths = {
+    mail: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></>,
+    github: <><path d="M9 19c-4.3 1.3-4.3-2.2-6-2.7M15 22v-3.8a3.3 3.3 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-7A5.5 5.5 0 0 0 18.8 5a5.1 5.1 0 0 0-.1-3.6S17.5 1 15 2.8a13.4 13.4 0 0 0-7 0C5.5 1 4.3 1.4 4.3 1.4A5.1 5.1 0 0 0 4.2 5a5.5 5.5 0 0 0-1.5 3.8c0 5.5 3.2 6.7 6.2 7A3.3 3.3 0 0 0 8 18.3V22"/></>,
+    location: <><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></>,
+    sun: <><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></>,
+    moon: <path d="M20.9 13a9 9 0 1 1-9.9-9.9A7 7 0 0 0 20.9 13Z"/>,
+    arrow: <path d="M5 12h14m-5-5 5 5-5 5"/>,
+  };
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
+}
+
 function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("light");
-  useEffect(() => setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light"), []);
+  const [theme, setTheme] = useState<Theme>(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
   function toggleTheme() {
     const next = theme === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = next;
-    localStorage.setItem("theme", next);
+    try { localStorage.setItem("theme", next); } catch { /* Theme still works when storage is unavailable. */ }
     setTheme(next);
   }
-  return <button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}><span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span></button>;
+  return <button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}><Icon name={theme === "dark" ? "sun" : "moon"}/></button>;
+}
+
+function Sidebar() {
+  return <aside className="profile-sidebar" aria-label="Personal profile">
+    <a href="/" className="portrait-link" aria-label="Lu Xiao home"><img className="profile-photo" src={profile.portrait} alt="Lu Xiao sitting in a mountain landscape" width="630" height="648" fetchPriority="high" /></a>
+    <div className="profile-identity"><h2>{profile.name} <span lang="zh">{profile.chineseName}</span></h2><p className="profile-role">{profile.role}</p><p>{profile.institution}</p><p className="profile-school">{profile.school}</p></div>
+    <div className="social-links"><a href={`mailto:${profile.email}`} aria-label="Email Lu Xiao" title={profile.email}><Icon name="mail"/></a><a href={profile.github} target="_blank" rel="noreferrer" aria-label="Lu Xiao on GitHub" title="GitHub"><Icon name="github"/></a><a href="/about/#contact" aria-label="Contact details" title="Contact details"><Icon name="location"/></a></div>
+    <section className="research-interests"><h3>Research interests</h3><ul>{profile.interests.map(interest => <li key={interest}>{interest}</li>)}</ul></section>
+    <a className="sidebar-contact" href={`mailto:${profile.email}`}>{profile.email}<Icon name="arrow"/></a>
+  </aside>;
 }
 
 function Layout({ children }: { children: ReactNode }) {
   return <>
-    <header className="site-header">
-      <a className="site-title" href="/">Lu Xiao</a>
-      <div className="header-actions">
-        <nav aria-label="Main navigation">{navigation.map(([label, href]) => <a href={href} key={href} aria-current={location.pathname === href || (href === "/writing/" && location.pathname.startsWith("/writing/")) ? "page" : undefined}>{label}</a>)}</nav>
-        <ThemeToggle />
-      </div>
-    </header>
-    <div className="site-content">{children}</div>
-    <footer>© <span className="year-number">2026</span> <span className="footer-name">Lu Xiao</span></footer>
+    <a className="skip-link" href="#main-content">Skip to content</a>
+    <header className="site-header"><a className="site-title" href="/">Lu Xiao<span className="title-dot">.</span></a><div className="header-actions"><nav aria-label="Main navigation">{navigation.map(([label, href]) => <a href={href} key={href} aria-current={location.pathname === href || (href !== "/" && location.pathname.startsWith(href)) ? "page" : undefined}>{label}</a>)}</nav><span className="header-divider"/><ThemeToggle /></div></header>
+    <div className="site-content"><Sidebar/><div className="main-column" id="main-content" tabIndex={-1}>{children}</div></div>
+    <footer><span>© {new Date().getFullYear()} Lu Xiao</span><span>Design inspired by <a href="https://github.com/xyjoey/PRISM" target="_blank" rel="noreferrer">PRISM</a></span><a href="#main-content">Back to top ↑</a></footer>
   </>;
 }
 
 const LinkOut = ({ href, children }: { href: string; children: ReactNode }) => <a href={href} target="_blank" rel="noreferrer">{children}</a>;
 
+function SectionHeading({ title, href, link }: { title: string; href?: string; link?: string }) {
+  return <div className="section-heading"><h2>{title}</h2>{href && <a href={href}>{link || "View all"}<Icon name="arrow"/></a>}</div>;
+}
+
+function Education() {
+  return <div className="education-list">{education.map(item => <article className="affiliation-item" key={item.degree}><img src={item.logo} alt={`${item.institution} emblem`} width="48" height="48"/><div><div className="affiliation-heading"><h3>{item.institution}</h3><time>{item.date}</time></div><p className="degree">{item.degree}</p><p>{item.detail}</p></div></article>)}</div>;
+}
+
+function Experience({ compact = false }: { compact?: boolean }) {
+  return <div className="experience-list">{experience.slice(0, compact ? 3 : undefined).map(item => <article className="affiliation-item" key={item.date}><img src={item.logo} alt={`${item.institution} emblem`} width="48" height="48"/><div><div className="affiliation-heading"><h3>{item.institution}</h3><time>{item.date}</time></div><p className="degree">{item.role}{item.lab && ` · ${item.lab}`}</p><p>Mentor: Prof. <LinkOut href={item.href}>{item.mentor}</LinkOut></p></div></article>)}</div>;
+}
+
+function Biography() {
+  return <div className="biography"><p>I am a master’s student at the <a href="https://www.hnu.edu.cn/" target="_blank" rel="noreferrer">School of Artificial Intelligence and Robotics, Hunan University</a>, working with Prof. <LinkOut href={experience[0].href}>Leyuan Fang</LinkOut> in the Intelligent Sensing and Action Lab.</p><p>My research focuses on <strong>robotic manipulation</strong>, with interests in <strong>robot learning</strong> and <strong>deep reinforcement learning</strong>.</p><p>Previously, I received my B.Eng. in Electronic Information Engineering from Jiluan Academy, Nanchang University. I also completed research training through the April programme at Shenzhen X-Institute and spent time at Tsinghua SIGS and Westlake University.</p></div>;
+}
+
+function Research() {
+  return <div className="research-list">{research.map((item, index) => <article className="research-item" key={item.title}><span className="research-number" aria-hidden="true">0{index + 1}</span><div><p className="research-category">{item.category}</p><h3>{item.title}</h3><p>{item.description}</p></div></article>)}</div>;
+}
+
 function Home() {
-  const recent = [...writingEntries.map(item => ({ ...item, external: true })), ...posts.map(post => ({ date: post.date, title: post.title, description: post.description, format: "Essay", href: `/writing/article/?slug=${encodeURIComponent(post.slug)}`, external: false }))].sort((a, b) => b.date.replaceAll(".", "-").localeCompare(a.date.replaceAll(".", "-"))).slice(0, 4);
+  const recent = [...writingEntries.map(item => ({ ...item, external: true })), ...posts.map(post => ({ date: post.date, title: post.title, description: post.description, format: "Essay", href: `/writing/article/?slug=${encodeURIComponent(post.slug)}`, external: false }))].sort((a, b) => b.date.replaceAll(".", "-").localeCompare(a.date.replaceAll(".", "-"))).slice(0, 3);
   return <main className="home">
-    <section className="home-profile" aria-labelledby="home-name">
-      <div className="home-profile-copy">
-        <h1 id="home-name">Lu Xiao <span>肖路</span></h1>
-        <p>I am a master’s student in the School of Artificial Intelligence and Robotics at Hunan University, where I work on robotic manipulation. My research interests include robot learning and deep reinforcement learning.</p>
-        <p>Previously, I received my B.Eng. in Electronic Information Engineering from Nanchang University. I have also spent time at Shenzhen X-Institute, Tsinghua SIGS, and Westlake University.</p>
-        <div className="home-links"><a href="mailto:luxiao.x7@gmail.com">Email</a><a href="https://github.com/LuX-x7">GitHub</a><a href="/about/">More about me</a></div>
-      </div>
-      <img className="profile-photo" src="/portrait.jpg" alt="Lu Xiao sitting in a mountain landscape" width="630" height="648" fetchPriority="high" />
-    </section>
-    <section className="home-notes" aria-labelledby="writing-heading">
-      <div className="home-notes-heading"><h2 id="writing-heading">Recent writing</h2><a href="/writing/">All writing →</a></div>
-      <p>Notes and reflections from my studies.</p>
-      <div className="home-note-list">{recent.map(item => <article className="home-note" key={item.href}><time dateTime={item.date.replaceAll(".", "-")}>{item.date.replaceAll(".", "-")}</time><div><h3><a href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined}>{item.title}</a></h3><p>{item.description}</p><span>{item.format === "PDF" ? "PDF notes" : "Essay"}</span></div></article>)}</div>
-    </section>
+    <section className="about-section"><p className="eyebrow">ROBOT LEARNING & MANIPULATION</p><h1>About me</h1><Biography/></section>
+    <section className="home-section"><SectionHeading title="Selected research" href="/projects/" link="All projects"/><Research/></section>
+    <section className="home-section"><SectionHeading title="Selected writing" href="/writing/" link="All writing"/><div className="note-cards">{recent.map(item => <article className="note-card" key={item.href}><div className="note-meta"><span>{item.format === "PDF" ? "Learning notes" : "Essay"}</span><time dateTime={item.date.replaceAll(".", "-")}>{item.date.replaceAll(".", "-")}</time></div><h3><a href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined}>{item.title}<span aria-hidden="true">↗</span></a></h3><p>{item.description}</p><a className="note-action" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined}>{item.format === "PDF" ? "Read PDF" : "Read essay"}<Icon name="arrow"/></a></article>)}</div></section>
+    <section className="home-section"><SectionHeading title="Education"/><Education/></section>
+    <section className="home-section"><SectionHeading title="Research experience" href="/about/#experience" link="Full background"/><Experience compact/></section>
   </main>;
 }
 
 function About() {
-  return <main>
-    <header className="page-header"><h1>About</h1><p>A little more about my background, research, and how to reach me.</p></header>
-    <section className="text-section"><h2>Biography</h2><p>I am Lu Xiao (肖路), a master&apos;s student at Hunan University&apos;s School of Artificial Intelligence and Robotics. My research focuses on robotic manipulation, with interests in robot learning and deep reinforcement learning. I received my B.Eng. in Electronic Information Engineering from Jiluan Academy at Nanchang University. I also trained through the April programme at Shenzhen X-Institute, and my research experience includes work at Tsinghua SIGS and Westlake University.</p></section>
-    <section className="text-section"><h2>Education</h2>
-      <div className="dated-item"><time>2026.09–2029.06 (Expected)</time><div><h3>M.Sc. in Artificial Intelligence</h3><p>School of Artificial Intelligence and Robotics, Hunan University</p></div><img className="institution-logo" src="/logos/hnu.png" alt="Hunan University emblem" /></div>
-      <div className="dated-item"><time>2022.09–2026.06</time><div><h3>B.Eng. in Electronic Information Engineering</h3><p>Jiluan Academy, Nanchang University</p></div><img className="institution-logo" src="/logos/ncu.png" alt="Nanchang University emblem" /></div>
-    </section>
-    <section className="text-section"><h2>Research Experience</h2>
-      <div className="dated-item"><time>2026.09–</time><div><h3>Research Student</h3><p>Intelligent Sensing and Action Lab, Hunan University</p><p>Mentor: Professor <LinkOut href="https://robotics.hnu.edu.cn/info/1176/3115.htm">Leyuan Fang</LinkOut></p></div><img className="institution-logo" src="/logos/hnu.png" alt="Hunan University emblem" /></div>
-      <div className="dated-item"><time>2025.11–2026.09</time><div><h3>Visiting Student</h3><p>Westlake Intelligent Computing and Application Lab, Westlake University</p><p>Mentor: Chair Professor <LinkOut href="https://haibinling.github.io/">Haibin Ling</LinkOut></p></div><img className="institution-logo" src="/logos/westlake.png" alt="Westlake University logo" /></div>
-      <div className="dated-item"><time>2025.01–2025.09</time><div><h3>Intern</h3><p>Shenzhen X-Institute &amp; Tsinghua SIGS</p><p>Mentor: Professor <LinkOut href="https://www.sigs.tsinghua.edu.cn/wxq/list.htm">Xueqian Wang</LinkOut></p></div><div className="institution-logos"><img className="institution-logo institution-logo-wide" src="/logos/x-institute.jpg" alt="Shenzhen X-Institute logo" /><img className="institution-logo" src="/logos/tsinghua.png" alt="Tsinghua University emblem" /></div></div>
-      <div className="dated-item"><time>2023.06–2025.01</time><div><h3>Intern</h3><p>School of Advanced Manufacturing, Nanchang University</p><p>Mentor: Professor <LinkOut href="https://teacher.ncu.edu.cn/publish/091727/index.html">Zhi Hu</LinkOut></p></div><img className="institution-logo" src="/logos/ncu.png" alt="Nanchang University emblem" /></div>
-      <div className="dated-item"><time>2022.09–2023.06</time><div><h3>Intern</h3><p>School of Chemistry and Chemical Engineering, Nanchang University</p><p>Mentor: Professor <LinkOut href="https://chem.ncu.edu.cn/article.jsp?urltype=news.NewsContentUrl&wbtreeid=1411&wbnewsid=7261">Xiang Wang</LinkOut></p></div><img className="institution-logo" src="/logos/ncu.png" alt="Nanchang University emblem" /></div>
-    </section>
-    <section className="text-section"><h2>Contact</h2><div className="contact-list"><p><span>Email</span><a href="mailto:luxiao.x7@gmail.com">luxiao.x7@gmail.com</a></p><p><span>WeChat</span><strong>LuX_Maphy</strong></p></div></section>
-  </main>;
+  return <main><header className="page-header"><p className="eyebrow">BACKGROUND & CONTACT</p><h1>About</h1><p>My path through learning and research.</p></header><section className="text-section"><h2>Biography</h2><Biography/></section><section className="text-section"><h2>Education</h2><Education/></section><section className="text-section" id="experience"><h2>Research experience</h2><Experience/></section><section className="text-section" id="contact"><h2>Get in touch</h2><p>Feel free to reach out about research and shared interests.</p><div className="contact-list"><p><span>Email</span><a href={`mailto:${profile.email}`}>{profile.email}</a></p><p><span>GitHub</span><LinkOut href={profile.github}>LuX-x7 ↗</LinkOut></p><p><span>WeChat</span><span>{profile.wechat}</span></p></div></section></main>;
 }
 
 function Writing() {
@@ -157,7 +171,7 @@ function Article() {
 }
 
 function Projects() {
-  return <main><header className="page-header"><h1>Projects</h1><p>A selection of things I am building and learning from.</p></header>{projectEntries.map(project => <section className="project-item" key={project.title}><div className="project-heading"><time>{project.date}</time><h2>{project.title}</h2></div><p>{project.description}</p><p className="project-meta">{project.status}</p></section>)}</main>;
+  return <main><header className="page-header"><h1>Research &amp; projects</h1><p>Work on UAV evaluation, multi-agent collaboration, and things I build.</p></header><section className="text-section"><h2>Research</h2><Research/></section><section className="text-section"><h2>Other projects</h2>{projectEntries.map(project => <section className="project-item" key={project.title}><div className="project-heading"><time>{project.date}</time><h2><LinkOut href={project.href}>{project.title} ↗</LinkOut></h2></div><p>{project.description}</p><p className="project-meta">{project.status}</p></section>)}</section></main>;
 }
 
 const page = document.body.dataset.page;
