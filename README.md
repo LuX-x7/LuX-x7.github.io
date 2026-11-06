@@ -34,8 +34,6 @@ This repository is both my personal website and a quiet record of what I learn, 
 | 2026.09 – | Research Student | Intelligent Sensing and Action Lab, Hunan University · Prof. Leyuan Fang |
 | 2025.11 – 2026.09 | Visiting Student | Westlake Intelligent Computing and Application Lab, Westlake University · Prof. Haibin Ling |
 | 2025.01 – 2025.09 | Intern | Shenzhen X-Institute & Tsinghua SIGS · Prof. Xueqian Wang |
-| 2023.06 – 2025.01 | Intern | School of Advanced Manufacturing, Nanchang University · Prof. Zhi Hu |
-| 2022.09 – 2023.06 | Intern | School of Chemistry and Chemical Engineering, Nanchang University · Prof. Xiang Wang |
 
 ## 📚 Writing & Notes
 

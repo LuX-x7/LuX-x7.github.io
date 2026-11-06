@@ -134,8 +134,7 @@ function Experience({ compact = false }: { compact?: boolean }) {
 function Biography() {
   return <div className="biography">
     <p>I am <strong>Lu Xiao (肖路)</strong>, a master’s student in the School of Artificial Intelligence and Robotics at <LinkOut href="https://www.hnu.edu.cn/">Hunan University</LinkOut>, working with Prof. <LinkOut href={experience[0].href}>Leyuan Fang</LinkOut>. My research focuses on <strong>robotic manipulation</strong>, with interests in robot learning and deep reinforcement learning.</p>
-    <p>I received my B.Eng. in Electronic Information Engineering from <strong>Jiluan Academy, Nanchang University</strong>. During my undergraduate studies, I also gained research experience at Nanchang University, working with Prof. <LinkOut href={experience[4].href}>Xiang Wang</LinkOut> and Prof. <LinkOut href={experience[3].href}>Zhi Hu</LinkOut>.</p>
-    <p>Previously, I completed six months of research training through the April programme at <strong>Shenzhen X-Institute</strong> and was a research intern at <strong>X-Institute and Tsinghua SIGS</strong> with Prof. <LinkOut href={experience[2].href}>Xueqian Wang</LinkOut>. I later visited <strong>Westlake University</strong>, working with Prof. <LinkOut href={experience[1].href}>Haibin Ling</LinkOut> in the Westlake Intelligent Computing and Application Lab.</p>
+    <p>I received my B.Eng. in Electronic Information Engineering from <strong>Jiluan Academy, Nanchang University</strong>. Previously, I trained through the April programme at <strong>Shenzhen X-Institute</strong> and worked with Prof. <LinkOut href={experience[2].href}>Xueqian Wang</LinkOut> at <strong>X-Institute and Tsinghua SIGS</strong>. I was also a visiting student at <strong>Westlake University</strong>, working with Prof. <LinkOut href={experience[1].href}>Haibin Ling</LinkOut>.</p>
   </div>;
 }
 
