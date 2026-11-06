@@ -50,7 +50,10 @@ nav a.is-active::after, nav a:hover::after { transform: scaleX(1); }
 .site-content { display: grid; grid-template-columns: 218px minmax(0, 1fr); gap: 52px; max-width: 1320px; padding: 30px 28px 65px; margin: auto; min-height: calc(100vh - 140px); align-items: start; }
 .profile-sidebar { position: sticky; top: 96px; font-size: 14px; }
 .portrait-link { display: block; width: 178px; margin-bottom: 17px; }
-.profile-photo { display: block; width: 178px; height: 178px; padding: 4px; border: 1px solid var(--border); border-radius: 50%; object-fit: cover; }
+.avatar-frame { position: relative; display: grid; place-items: center; width: 178px; height: 178px; border: 1px solid var(--border); border-radius: 50%; overflow: hidden; background: var(--surface); }
+.avatar-placeholder { color: var(--link); font-size: 32px; font-weight: 600; }
+.profile-photo { position: absolute; inset: 4px; display: block; width: calc(100% - 8px); height: calc(100% - 8px); border-radius: 50%; object-fit: cover; opacity: 0; }
+.profile-photo[data-loaded="true"] { opacity: 1; }
 .profile-identity h2 { font-size: 22px; margin-bottom: 8px; }
 .profile-identity h2 span { margin-left: 6px; font-size: 19px; font-weight: 500; }
 .profile-identity p { margin: 0; font-size: 14px; }
@@ -149,7 +152,7 @@ footer > span:nth-child(2) { margin-left: auto; }
   .site-content { display: block; padding: 25px 22px 45px; }
   .profile-sidebar { position: static; display: grid; grid-template-columns: 100px minmax(0,1fr); gap: 0 20px; margin-bottom: 28px; padding-bottom: 23px; border-bottom: 1px solid var(--border); }
   .portrait-link { grid-row: 1; width: 100px; margin: 0; }
-  .profile-photo { width: 100px; height: 100px; padding: 3px; }
+  .avatar-frame { width: 100px; height: 100px; }
   .profile-identity h2 { font-size: 21px; margin-bottom: 3px; }
   .profile-identity h2 span { font-size: 18px; }
   .profile-identity .profile-school { font-size: 13px; margin-top: 3px; }

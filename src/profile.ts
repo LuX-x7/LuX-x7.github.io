@@ -8,7 +8,7 @@ export const profile = {
   email: "luxiao.x7@gmail.com",
   github: "https://github.com/LuX-x7",
   wechat: "LuX_x7",
-  portrait: "/portrait.jpg",
+  portrait: new URL("./assets/touxiang1.jpg", import.meta.url).href,
   interests: ["Robot Learning", "Deep Reinforcement Learning", "Robotic Manipulation"],
 };
 

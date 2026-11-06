@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "../app/globals.css";
 import posts from "virtual:writing";
 import { profile, education, experience, research } from "./profile";
+import Avatar from "./Avatar";
 
 type Theme = "light" | "dark";
 
@@ -74,7 +75,7 @@ function ThemeToggle() {
 
 function Sidebar() {
   return <aside className="profile-sidebar" aria-label="Personal profile">
-    <a href="/" className="portrait-link" aria-label="Lu Xiao home"><img className="profile-photo" src={profile.portrait} alt="Lu Xiao sitting in a mountain landscape" width="176" height="176" fetchPriority="high" /></a>
+    <a href="/" className="portrait-link" aria-label="Lu Xiao home"><Avatar src={profile.portrait}/></a>
     <div className="profile-identity"><h2>{profile.name} <span lang="zh">{profile.chineseName}</span></h2><p className="profile-role">{profile.role}</p><p>{profile.institution}</p><p className="profile-school">{profile.school}</p></div>
     <p className="sidebar-bio">Robot learning, reinforcement learning, and robotic manipulation.</p>
     <ul className="social-links"><li><a href={`mailto:${profile.email}`} title={profile.email}><Icon name="mail"/>Email</a></li><li><a href={profile.github} target="_blank" rel="noreferrer"><Icon name="github"/>GitHub</a></li><li><a href="/about/#contact"><Icon name="location"/>Contact &amp; WeChat</a></li></ul>
