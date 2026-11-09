@@ -7,7 +7,16 @@ import Avatar from "./Avatar";
 
 type Theme = "light" | "dark";
 
-const navigation = [["About Me", "/#about-me"], ["Research", "/#research"], ["Education", "/#education"], ["Experience", "/#experience"], ["Writing", "/writing/"], ["Projects", "/projects/"]];
+const isHome = document.body.dataset.page === "home";
+const homeAnchorPrefix = isHome ? "" : "/";
+const navigation = [
+  { label: "About Me", id: "about-me" },
+  { label: "Research", id: "research" },
+  { label: "Education", id: "education" },
+  { label: "Experience", id: "experience" },
+  { label: "Writing", id: "writing" },
+  { label: "Contact", id: "contact" },
+];
 
 const writingEntries = [
   {
@@ -78,26 +87,32 @@ function Sidebar() {
     <a href="/" className="portrait-link" aria-label="Lu Xiao home"><Avatar src={profile.portrait}/></a>
     <div className="profile-identity"><h2>{profile.name} <span lang="zh">{profile.chineseName}</span></h2><p className="profile-role">{profile.role}</p><p>{profile.institution}</p><p className="profile-school">{profile.school}</p></div>
     <p className="sidebar-bio">Robot learning, reinforcement learning, and robotic manipulation.</p>
-    <ul className="social-links"><li><a href={`mailto:${profile.email}`} title={profile.email}><Icon name="mail"/>Email</a></li><li><a href={profile.github} target="_blank" rel="noreferrer"><Icon name="github"/>GitHub</a></li><li><a href="/about/#contact"><Icon name="location"/>Contact &amp; WeChat</a></li></ul>
+    <ul className="social-links"><li><a href={`mailto:${profile.email}`} title={profile.email}><Icon name="mail"/>Email</a></li><li><a href={profile.github} target="_blank" rel="noreferrer"><Icon name="github"/>GitHub</a></li><li><a href={`${homeAnchorPrefix}#contact`}><Icon name="location"/>Contact &amp; WeChat</a></li></ul>
   </aside>;
 }
 
 function Layout({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [active, setActive] = useState(location.pathname.startsWith("/writing/") ? "/writing/" : location.pathname.startsWith("/projects/") ? "/projects/" : "/#about-me");
+  const [active, setActive] = useState<string | null>(null);
   useEffect(() => {
-    if (document.body.dataset.page !== "home") return;
+    if (!isHome) return;
     let frame = 0;
     function update() {
+      const atBottom = window.scrollY > 0 && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+      if (atBottom) {
+        setActive("contact");
+        return;
+      }
       const threshold = (document.querySelector(".site-header")?.getBoundingClientRect().height || 64) + 30;
-      const sections = ["about-me", "research", "education", "experience", "writing"];
       let current = "about-me";
-      for (const id of sections) {
+      for (const { id } of navigation) {
         if ((document.getElementById(id)?.getBoundingClientRect().top ?? Infinity) <= threshold) current = id;
       }
-      setActive(current === "writing" ? "/writing/" : `/#${current}`);
+      setActive(current);
     }
     function onScroll() { cancelAnimationFrame(frame); frame = requestAnimationFrame(update); }
+    // A direct fragment link can arrive before React renders its target.
+    document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: "instant" });
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
@@ -110,7 +125,13 @@ function Layout({ children }: { children: ReactNode }) {
   }, []);
   return <>
     <a className="skip-link" href="#main-content">Skip to content</a>
-    <header className={`site-header${menuOpen ? " menu-open" : ""}`}><a className="site-title" href="/">Homepage</a><div className="header-actions"><nav id="main-navigation" aria-label="Main navigation">{navigation.map(([label, href]) => <a href={href} key={href} className={active === href ? "is-active" : undefined} aria-current={active === href ? (href.includes("#") ? "location" : "page") : undefined} onClick={() => setMenuOpen(false)}>{label}</a>)}</nav><ThemeToggle/><button className="menu-toggle" type="button" aria-label="Navigation menu" aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen(open => !open)}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">{menuOpen ? <path d="m6 6 12 12M6 18 18 6"/> : <path d="M4 6h16M4 12h16M4 18h16"/>}</svg><span>Menu</span></button></div></header>
+    <header className={`site-header${menuOpen ? " menu-open" : ""}`}><a className="site-title" href="/">Homepage</a><div className="header-actions">
+      <nav id="main-navigation" aria-label="Main navigation">
+        {navigation.map(({ label, id }) => (
+          <a href={`${homeAnchorPrefix}#${id}`} key={id} className={active === id ? "is-active" : undefined} aria-current={active === id ? "location" : undefined} onClick={() => setMenuOpen(false)}>{label}</a>
+        ))}
+      </nav>
+      <ThemeToggle/><button className="menu-toggle" type="button" aria-label="Navigation menu" aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen(open => !open)}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">{menuOpen ? <path d="m6 6 12 12M6 18 18 6"/> : <path d="M4 6h16M4 12h16M4 18h16"/>}</svg><span>Menu</span></button></div></header>
     <div className="site-content"><Sidebar/><div className="main-column" id="main-content" tabIndex={-1}>{children}</div></div>
     <footer><span>© {new Date().getFullYear()} Lu Xiao</span><span>Layout inspired by <a href="https://github.com/RayeRen/acad-homepage.github.io" target="_blank" rel="noreferrer">AcadHomepage</a> · Navigation inspired by <a href="https://github.com/xyjoey/PRISM" target="_blank" rel="noreferrer">PRISM</a></span><a href="#main-content">Back to top ↑</a></footer>
   </>;
@@ -128,8 +149,8 @@ function Education() {
   return <div className="education-list">{education.map(item => <article className="affiliation-item" key={item.degree}><img src={item.logo} alt={`${item.institution} emblem`} width="80" height="80"/><div><div className="affiliation-heading"><h3>{item.institution}</h3><time>{item.date}</time></div><p className="degree">{item.degree}</p><p>{item.detail}</p></div></article>)}</div>;
 }
 
-function Experience({ compact = false }: { compact?: boolean }) {
-  return <div className="experience-list">{experience.slice(0, compact ? 3 : undefined).map(item => <article className="affiliation-item" key={item.date}><img src={item.logo} alt={`${item.institution} emblem`} width="48" height="48"/><div><div className="affiliation-heading"><h3>{item.institution}</h3><time>{item.date}</time></div><p className="degree">{item.role}{item.lab && ` · ${item.lab}`}</p><p>Mentor: Prof. <LinkOut href={item.href}>{item.mentor}</LinkOut></p></div></article>)}</div>;
+function Experience() {
+  return <div className="experience-list">{experience.map(item => <article className="affiliation-item" key={item.date}><img src={item.logo} alt={`${item.institution} emblem`} width="48" height="48"/><div><div className="affiliation-heading"><h3>{item.institution}</h3><time>{item.date}</time></div><p className="degree">{item.role}{item.lab && ` · ${item.lab}`}</p><p>Mentor: Prof. <LinkOut href={item.href}>{item.mentor}</LinkOut></p></div></article>)}</div>;
 }
 
 function Biography() {
@@ -151,11 +172,15 @@ function Home() {
     <section className="home-section" id="education"><SectionHeading title="Education"/><Education/></section>
     <section className="home-section" id="experience"><SectionHeading title="Research Experience"/><Experience/></section>
     <section className="home-section" id="writing"><SectionHeading title="Writing & Notes" href="/writing/" link="All writing"/><div className="note-cards">{recent.map(item => <article className="note-card" key={item.href}><div className="note-meta"><time dateTime={item.date.replaceAll(".", "-")}>{item.date.replaceAll(".", "-")}</time><span>{item.format === "PDF" ? "PDF notes" : "Essay"}</span></div><div className="note-copy"><h3><a href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined}>{item.title}</a></h3><p>{item.description}</p></div></article>)}</div></section>
+    <section className="home-section" id="contact">
+      <SectionHeading title="Contact"/>
+      <div className="contact-list">
+        <p><span>Email</span><a href={`mailto:${profile.email}`}>{profile.email}</a></p>
+        <p><span>GitHub</span><LinkOut href={profile.github}>LuX-x7 ↗</LinkOut></p>
+        <p><span>WeChat</span><span>{profile.wechat}</span></p>
+      </div>
+    </section>
   </main>;
-}
-
-function About() {
-  return <main><header className="page-header"><p className="eyebrow">BACKGROUND & CONTACT</p><h1>About</h1><p>My path through learning and research.</p></header><section className="text-section"><h2>Biography</h2><Biography/></section><section className="text-section"><h2>Education</h2><Education/></section><section className="text-section" id="experience"><h2>Research experience</h2><Experience/></section><section className="text-section" id="contact"><h2>Get in touch</h2><p>Feel free to reach out about research and shared interests.</p><div className="contact-list"><p><span>Email</span><a href={`mailto:${profile.email}`}>{profile.email}</a></p><p><span>GitHub</span><LinkOut href={profile.github}>LuX-x7 ↗</LinkOut></p><p><span>WeChat</span><span>{profile.wechat}</span></p></div></section></main>;
 }
 
 function Writing() {
@@ -205,6 +230,6 @@ function Projects() {
 }
 
 const page = document.body.dataset.page;
-const content = page === "about" ? <About /> : page === "writing" ? <Writing /> : page === "article" ? <Article /> : page === "projects" ? <Projects /> : <Home />;
+const content = page === "writing" ? <Writing /> : page === "article" ? <Article /> : page === "projects" ? <Projects /> : <Home />;
 document.title = `${page && page !== "home" ? `${page[0].toUpperCase()}${page.slice(1)} — ` : ""}Lu Xiao`;
 createRoot(document.getElementById("root")!).render(<Layout>{content}</Layout>);
